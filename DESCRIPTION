@@ -2,24 +2,35 @@ Package: surviveR
 Title: Tidyverse-based Reliability and Survival Data Visualization Tool
 Version: 1.0.0
 Authors@R: c(
-    person("Kristen", "Gore", "kgore@willamette.edu", role = c("aut", "cre")),
-    person("Samuel", "Jeffe", "sajeffe@willamette.edu", role = c("aut")),
-    person("Emma", "Schneider", "emschneider@willamette.edu", role = c("aut")),
-    person("M", "Caputo", "smcaputo@willamette.edu", role = c("ctb")),
-    person("Serenna", "Walter", "slthorsen@willamette.edu", role = c("ctb")))
+    person(
+        given="Kristen", family="Gore", email="kgore@willamette.edu", role = c("aut", "cre")
+    ),
+    person(
+        given="Samuel", family="Jeffe", email="sajeffe@willamette.edu", role = c("aut")
+    ),
+    person(
+        given="Emma", family="Schneider", email="emschneider@willamette.edu", role = c("aut")
+    ),
+    person(
+        given="M", family="Caputo", email="smcaputo@willamette.edu", role = c("ctb")
+    ),
+    person(
+        given="Serenna", family="Walter", email="slthorsen@willamette.edu", role = c("ctb")
+    ))
 Description: A suite of reliability/survival data visualization tools that leverage 
-    the Tidyverse Grammar of Graphics. Time-based aesthetics may be specified
-    alongside standard non-aesthetic arguments to easily generate highly customizable
+    the Tidyverse Grammar of Graphics.  Time-based aesthetics may be specified
+    alongside standard non-aesthetic arguments to generate highly customizable
     graphs.
 License: `use_gpl3_license()`
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd"))
 Imports: 
     tidyverse,
+    ggplot2,
     survival,
     flexsurv,
     broom
-Depends: 
-    R (>= 4.6)
 LazyData: true
 Config/roxygen2/version: 8.0.0
+URL: https://github.com/KLGORE/surviveR
+BugReports: https://github.com/KLGORE/surviveR/issues
