@@ -7,10 +7,10 @@
 geom_km2(
   formula = NULL,
   ...,
-  data = NULL,
-  inherit.aes = T,
   conf.int = 0.95,
-  failure = F
+  failure = F,
+  data = NULL,
+  inherit.aes = T
 )
 }
 \arguments{
@@ -18,13 +18,13 @@ geom_km2(
 
 \item{...}{Other non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
-\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
-
-\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default=TRUE.}
-
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
 \item{failure}{TRUE or FALSE (default). Values of TRUE will result in a failure curve being plotted, FALSE will result in a survival curve.}
+
+\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
+
+\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
 
 \item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
 \itemize{
@@ -39,7 +39,7 @@ geom_km2(
 
 \item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
 
-\item{conf.alpha}{Opacity value between 0 and 1.  0=transparent.  1=fully opaque.}
+\item{conf.alpha}{Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.}
 }
 \description{
 Create a Kaplan-Meier Curve from provided formula
@@ -50,7 +50,6 @@ For description of the functionality, see the main version \code{\link[=geom_km]
 \examples{
 
 # Univariate survival plot (no treatment or strata variables)
-
 mfg \%>\%
     ggplot() +
     geom_km2(formula = Surv(ttf,status) ~ 1, conf.int = 0.90)
@@ -58,7 +57,7 @@ mfg \%>\%
 # ^ equivalent to
 # mfg \%>\%
 #      ggplot() +
-#      geom_km(aes(time=ttf, time2=status), conf.int = 0.90)
+#      geom_km(aes(time = ttf, time2 = status), conf.int = 0.90)
 
 
 # Univariate failure plot (no treatment or strata variables)
@@ -69,7 +68,7 @@ mfg \%>\%
 # ^ equivalent to
 # mfg \%>\%
 #      ggplot() +
-#      geom_km(aes(time=ttf, time2=status), failure = T)
+#      geom_km(aes(time = ttf, time2 = status), failure = T)
 
 
 # Survival plot with treatment variable
@@ -80,32 +79,37 @@ mfg \%>\% filter(device_type == "A") \%>\%
 # ^ equivalent to
 # mfg \%>\% filter(device_type == "A") \%>\%
 #      ggplot() +
-#      geom_km(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+#      geom_km(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 
 
 # Survival plot with treatment and strata variables
-mfg \%>\% ggplot() +
+mfg \%>\% 
+    ggplot() +
     geom_km2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
     facet_grid(.~mfg_location)
 
 # ^ equivalent to
-# mfg \%>\% ggplot() +
-#      geom_km(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
+# mfg \%>\% 
+#      ggplot() +
+#      geom_km(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
 #      facet_grid(.~mfg_location)
 
 
 # Overlaying KM curve on semiparametric & parametric fits
-mfg \%>\% ggplot() +
+mfg \%>\% 
+    ggplot() +
     geom_coxph2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
     geom_km2(color = "black", conf.int = F) +
     facet_grid(.~mfg_location)
 
-mfg \%>\% ggplot() +
+mfg \%>\% 
+    ggplot() +
     geom_survreg2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
     geom_km2(color = "black", conf.int = F) +
     facet_grid(.~mfg_location)
 
-mfg \%>\% ggplot() +
+mfg \%>\% 
+    ggplot() +
     geom_survreg2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
     geom_coxph2() +
     geom_km2(color = "black", conf.int = F) +

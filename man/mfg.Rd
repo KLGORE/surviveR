@@ -3,14 +3,25 @@
 \docType{data}
 \name{mfg}
 \alias{mfg}
-\title{mfg}
+\title{Pilot reliability study for device life}
 \format{
-pilot study...
+A data frame with 100 rows and 7 variables:
+\describe{
+\item{device_id}{Unique ID for each device}
+\item{mfg_location}{Manufacturing location (OR, WA, or CA)}
+\item{device_type}{Device SKU (A or B)}
+\item{pilot_start}{Start date of pilot study}
+\item{status}{Censoring indicator.  1 = no censoring.  0 = right censoring}
+\item{end_date}{Date of last observation (either censoring date or failure date)}
+\item{ttf}{Time till failure}
+}
 }
 \usage{
 mfg
 }
 \description{
-EDIT THIS LATERRRRRRR(KLG)
+Simulated dataset containing observations from a fictional 90-day reliability pilot study
+One hundred customers elect to participate in this study.  Time observations for
+devices that have not failed by the end of the 90-day pilot are censored.
 }
 \keyword{datasets}

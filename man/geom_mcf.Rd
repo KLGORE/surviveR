@@ -4,7 +4,7 @@
 \alias{geom_mcf}
 \title{Create Mean Cumulative Function}
 \usage{
-geom_mcf(mapping = NULL, ..., data = NULL, inherit.aes = T)
+geom_mcf(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.aes = T)
 }
 \arguments{
 \item{mapping}{Aesthetics mapping with the following inputs:
@@ -17,11 +17,11 @@ geom_mcf(mapping = NULL, ..., data = NULL, inherit.aes = T)
 
 \item{...}{Other arguments pertaining to the MCF curves. Examples include, color, linetype, linewidth, etc.}
 
-\item{data}{The reference dataset.}
-
-\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default=TRUE.}
-
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
+
+\item{data}{The data to use, if not provided in the ggplot call.}
+
+\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
 
 \item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
 \itemize{
@@ -54,38 +54,31 @@ the creation of this function. The aesthetics of this function match those of th
 The following Tidyverse aesthetics arguments are accepted in geom_mcf: color, fill, group, linetype, and linewidth.
 }
 \examples{
-Example 1: Single device
+# Univariate MCF plot (no treatment or strata variables)
+device_repair \%>\% filter(device_type == "A") \%>\%
+   ggplot() + 
+   geom_mcf(aes(time = event_time, ids = device_id))
 
-  set.seed(762)
-  simulating data for a single device
-  df=tibble(
-      device_type="A",
-      time=rpois(100,lambda=5),
-      event_time=cumsum(time)
-  )
+# MCF plot with treatment variable
+device_repair \%>\% 
+   ggplot() + 
+   geom_mcf(aes(time = repair_time, ids = device_id, treatment = mfg_location))
+   
+# MCF plot with strata variable 
+device_repair \%>\% 
+   ggplot() + 
+   geom_mcf(aes(time = repair_time, ids = device_id, strata = device_type))
 
-  df \%>\% ggplot() + geom_mcf(mapping = aes(time=event_time))
+# MCF plot with treatment and strata variables
+device_repair \%>\% 
+   ggplot() + 
+   geom_mcf(aes(time = repair_time, ids = device_id, treatment = mfg_location, strata = device_type))
 
-# Example 2: device_repair (multistrata example) -> trts instead?
-
-p = device_repair \%>\% ggplot()
-
-# Basic mcf plot, providing ID and strata    is this basic??? #When ID and strata are provided. 
-p + geom_mcf(mapping = aes(time=repair_time, ids=device_id, strata=device_type))
-
-# When no strata is provided, #When ID is provided, but no strata.
-p + geom_mcf(mapping = aes(time=repair_time, ids=device_id))
-
-# If no ID is provided a generic one will be there #When strata is provided, but no ID.
-p + geom_mcf(mapping = aes(time=repair_time, strata=device_type))
-
-# should we have a color = strata?
-
-# All the confidence interval arguments provided
-# filtered ds for this one to just show A or something?
-p + geom_mcf(mapping = aes(time=repair_time, ids=device_id), conf.int=0.95,
-             conf.fill = "gray30", conf.linetype = "dotted",
-             conf.width = 0.5, conf.color = "darkred", conf.alpha = 0.15)
-
+# MCF plot with additional confidence interval arguments
+device_repair \%>\% filter(device_type == "A") \%>\%
+   ggplot() + 
+   geom_mcf(aes(time = repair_time, ids = device_id), conf.int = 0.95,
+           conf.fill = "gray30", conf.linetype = "dotted",
+           conf.linewidth = 0.5, conf.color = "darkred", conf.alpha = 0.15)
 
 }

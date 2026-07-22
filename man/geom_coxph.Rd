@@ -7,10 +7,10 @@
 geom_coxph(
   mapping = NULL,
   ...,
-  data = NULL,
-  inherit.aes = T,
   conf.int = 0.95,
-  failure = F
+  failure = F,
+  data = NULL,
+  inherit.aes = T
 )
 }
 \arguments{
@@ -24,13 +24,13 @@ geom_coxph(
 
 \item{...}{Other non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
-\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
-
-\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default=TRUE.}
-
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
 \item{failure}{TRUE or FALSE (default).  Values of TRUE will result in a failure curve being plotted.}
+
+\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
+
+\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default=TRUE.}
 
 \item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
 \itemize{
@@ -45,7 +45,7 @@ geom_coxph(
 
 \item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
 
-\item{conf.alpha}{Opacity value between 0 and 1.  0=transparent.  1=fully opaque.}
+\item{conf.alpha}{Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.}
 }
 \description{
 Utilizes tidyverse syntax to visualize Cox proportional hazards predictions.
@@ -68,24 +68,26 @@ Note: Though this function accepts strata in its arguments, the CPH predictions 
 # CoxPH survival plot with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_coxph(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+    geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 
 
 # CoxPH failure plot with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_coxph(aes(time=ttf, time2=status, treatments = mfg_location), failure = T)
+    geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T)
 
 
 # CoxPH survival plot with treatment and strata variables
-mfg \%>\% ggplot() +
-    geom_coxph(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
+mfg \%>\% 
+    ggplot() +
+    geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
     facet_grid(.~mfg_location)
 
 
 # Overlaying KM curve on CoxPH fit
-mfg \%>\% ggplot() +
-    geom_coxph(aes(time=ttf, time2=status, treatments=device_type, strata=mfg_location)) +
+mfg \%>\% 
+    ggplot() +
+    geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
     geom_km(color = "black", conf.int = F) +
     facet_grid(.~mfg_location)
 

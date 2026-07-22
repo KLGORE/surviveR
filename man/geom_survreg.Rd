@@ -6,14 +6,14 @@
 \usage{
 geom_survreg(
   mapping = NULL,
-  ...,
   dist = "weibull",
-  data = NULL,
-  inherit.aes = T,
-  failure = F,
+  ...,
   conf.int = 0.95,
+  failure = F,
   length.out = 1000,
-  xmax = NULL
+  xmax = NULL,
+  data = NULL,
+  inherit.aes = T
 )
 }
 \arguments{
@@ -25,20 +25,22 @@ geom_survreg(
 \item strata: optional column or vector corresponding to the stratifying variable.   \cr
 }}
 
-\item{...}{Non-aes arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
-
 \item{dist}{Distribution to be used in parametric survival fit.  Default value: "weibull".  Accepts all distributions accepted by \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}, including
 "genf","genf.orig" ,"gengamma", "gengamma.orig", "exp", "weibull", "weibullPH", "lnorm", "gamma", "gompertz", "llogis", "exponential", and "lognormal".  For a list of distributions supported by this function, please reference the documentation for \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}.}
 
-\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
-
-\item{failure}{TRUE or FALSE (default).  Values of TRUE will result in a failure curve being plotted.}
+\item{...}{Non-aes arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
+
+\item{failure}{TRUE or FALSE (default).  Values of TRUE will result in a failure curve being plotted.}
 
 \item{length.out}{Length of the time vector used in the prediction dataset being plotted.}
 
 \item{xmax}{Maximum time value on x-axis.  Defaults to 1.15 times max(time) if exact or right-censored data and 1.15 times max(time2) for interval-censored data.}
+
+\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
+
+\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
 
 \item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
 \itemize{
@@ -53,7 +55,7 @@ geom_survreg(
 
 \item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
 
-\item{conf.alpha}{Opacity value between 0 and 1.  0=transparent.  1=fully opaque.}
+\item{conf.alpha}{Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.}
 }
 \description{
 Create a parametric survival plot using aesthetic mapping arguments
@@ -69,31 +71,32 @@ flexsurvreg (and, by extension, geom_survreg2) may run sluggishly with large dat
 # Parametric survival plot with treatment variable (default: Weibull distribution)
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+    geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 
 
 # Lognormal survival fit with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), dist = "lognormal")
+    geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), dist = "lognormal")
 
 
 # Parametric failure plot with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), failure = T, conf.int = 0.90)
+    geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T, conf.int = 0.90)
 
 
 # Weibull fit with treatment and strata variables
-# mfg \%>\% ggplot() +
-#      geom_survreg(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
-#      facet_grid(.~mfg_location)
+mfg \%>\% 
+    ggplot() +
+    geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+    facet_grid(.~mfg_location)
 
 
 # Overlaying KM curve on top of parametric fit
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location)) +
+    geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location)) +
     geom_km(conf.int = F)
 
 # Note: By default, geom_km, geom_coxph, and geom_survreg inherit the mapping (time, time2, treatments, strata) and failure variables.

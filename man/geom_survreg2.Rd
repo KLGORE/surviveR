@@ -8,12 +8,12 @@ geom_survreg2(
   formula = NULL,
   dist = "weibull",
   ...,
-  data = NULL,
-  inherit.aes = T,
   conf.int = 0.95,
   failure = F,
   length.out = 1000,
-  xmax = NULL
+  xmax = NULL,
+  data = NULL,
+  inherit.aes = T
 )
 }
 \arguments{
@@ -24,10 +24,6 @@ geom_survreg2(
 
 \item{...}{Other graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
-\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
-
-\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default=TRUE.}
-
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
 \item{failure}{TRUE or FALSE (default).  Values of TRUE will result in a failure curve being plotted.}
@@ -35,6 +31,10 @@ geom_survreg2(
 \item{length.out}{length of the time vector created in the prediction dataset that is plotted}
 
 \item{xmax}{Maximum time value on x-axis.  Defaults to 1.15 times max(time) if exact or right-censored data and 1.15 times max(time2) for interval-censored data.}
+
+\item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
+
+\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
 
 \item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
 \itemize{
@@ -49,7 +49,7 @@ geom_survreg2(
 
 \item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
 
-\item{conf.alpha}{Opacity value between 0 and 1.  0=transparent.  1=fully opaque.}
+\item{conf.alpha}{The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.}
 }
 \description{
 Create a parametric survival plot using formula-based arguments
@@ -70,7 +70,7 @@ mfg \%>\% filter(device_type == "A") \%>\%
 # ^ equivalent to
 # mfg \%>\% filter(device_type == "A") \%>\%
 #      ggplot() +
-#      geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 
 
 # Lognormal survival fit with treatment variable
@@ -81,7 +81,7 @@ mfg \%>\% filter(device_type == "A") \%>\%
 # ^ equivalent to
 # mfg \%>\% filter(device_type == "A") \%>\%
 #      ggplot() +
-#      geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), dist = "lognormal")
+#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), dist = "lognormal")
 
 
 # Parametric failure plot with treatment variable and 90\% confidence interval
@@ -92,17 +92,19 @@ mfg \%>\% filter(device_type == "A") \%>\%
 # ^ equivalent to
 # mfg \%>\% filter(device_type == "A") \%>\%
 #      ggplot() +
-#      geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), failure = T, conf.int = 0.90)
+#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T, conf.int = 0.90)
 
 
 # Weibull fit with treatment and strata variables
-mfg \%>\% ggplot() +
+mfg \%>\% 
+    ggplot() +
     geom_survreg2(formula = Surv(ttf,status) ~ treatments + strata(mfg_location))
     facet_grid(.~mfg_location)
 
 # ^ equivalent to
-# mfg \%>\% ggplot() +
-#      geom_survreg(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
+# mfg \%>\% 
+      ggplot() +
+#      geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
 #      facet_grid(.~mfg_location)
 
 

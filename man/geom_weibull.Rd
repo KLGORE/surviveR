@@ -4,7 +4,7 @@
 \alias{geom_weibull}
 \title{Create a Weibull Plot}
 \usage{
-geom_weibull(mapping = NULL, ..., data = NULL, inherit.aes = T, line.fit = T)
+geom_weibull(mapping = NULL, ..., line.fit = T, data = NULL, inherit.aes = T)
 }
 \arguments{
 \item{mapping}{Aesthetics mapping with the following inputs: \cr
@@ -18,6 +18,8 @@ geom_weibull(mapping = NULL, ..., data = NULL, inherit.aes = T, line.fit = T)
 \item{...}{Other graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc) \cr}
 
 \item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
+
+\item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
 
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
@@ -34,40 +36,44 @@ geom_weibull(mapping = NULL, ..., data = NULL, inherit.aes = T, line.fit = T)
 
 \item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
 
-\item{conf.alpha}{Opacity value between 0 and 1.  0=transparent.  1=fully opaque.}
+\item{conf.alpha}{The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.}
 }
 \description{
-Create a Weibull plot using Kaplan-Meier tables
+Create a Weibull plot using non-parametric survival probabilities
 }
 \details{
-This function uses the survfit function in the survival package to generate a
-Weibull plot for the given data.  Weibull plots showcase log(-log(S(t)) vs. time relationship.
-Data that is well-modeled by the Weibull distribution should yield a linear relationship.  ADD REFERENCE
+This function utilizes the \link[survival:survfit]{survival::survfit} function to generate a
+Weibull plot for the provided survival data.  As discussed in CH6 of Statistical Methods
+for Reliability Data by Meeker, Escobar, and Pascual (2022),
+data that is well-modeled by the Weibull distribution should yield a linear
+log(-log(S(t)) vs. log(t) relationship.
 
-The \link{geom_weibull} function color-codes data points by the treatment variable and assigns shape according to the strata variable.
+The \link{geom_weibull} function color-codes data points by the
+treatment variable.  It assigns data point characters
+according to the strata variable.
 }
 \examples{
 # Univariate Weibull plot (no treatment or strata variables)
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_weibull(aes(time=ttf, time2=status))
+    geom_weibull(aes(time = ttf, time2 = status))
 
 
 # Weibull plot with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_weibull(aes(time=ttf, time2=status, treatments = mfg_location))
+    geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location))
 
 
 # Weibull plot with no line fit
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_weibull(aes(time=ttf, time2=status, treatments = mfg_location), line.fit = F)
+    geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location), line.fit = F)
 
 
 # Weibull plot with treatment and strata variables
 mfg \%>\% ggplot() +
-    geom_weibull(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
-    facet_grid(.~mfg_location, scale="free_x")
+    geom_weibull(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+    facet_grid(.~mfg_location, scale = "free_x")
 
 }
