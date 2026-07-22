@@ -22,13 +22,14 @@
 #' * String of color name (ex: "black")
 #' * TRUE indicates the color-coding fill color by treatment.
 #' * Values of FALSE, NA, and "transparent" may be used to omit shading.
-#' @param length.out Length of the time vector used in the prediction dataset being plotted.
-#' @param xmax Maximum time value on x-axis.  Defaults to 1.15 times max(time) if exact or right-censored data and 1.15 times max(time2) for interval-censored data.
 #' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
 #' @param conf.linewidth Line width of confidence interval lines.
 #' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha Opacity value between 0 and 1.  0=transparent.  1=fully opaque.
+#' @param conf.alpha Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
+#' @param length.out Length of the time vector used in the prediction dataset being plotted.
+#' @param xmax Maximum time value on x-axis.  Defaults to 1.15 times max(time) if exact or right-censored data and 1.15 times max(time2) for interval-censored data.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
+#' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
 #' @import tidyverse
@@ -42,41 +43,42 @@
 #'# Parametric survival plot with treatment variable (default: Weibull distribution)
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# Lognormal survival fit with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), dist = "lognormal")
+#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), dist = "lognormal")
 #'
 #'
 #'# Parametric failure plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), failure = T, conf.int = 0.90)
+#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T, conf.int = 0.90)
 #'
 #'
 #'# Weibull fit with treatment and strata variables
-#'# mfg %>% ggplot() +
-#'#      geom_survreg(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
-#'#      facet_grid(.~mfg_location)
+#'mfg %>% 
+#'     ggplot() +
+#'     geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'     facet_grid(.~mfg_location)
 #'
 #'
 #'# Overlaying KM curve on top of parametric fit
 #' mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location)) +
+#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location)) +
 #'     geom_km(conf.int = F)
 #'
 #'# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the mapping (time, time2, treatments, strata) and failure variables.
 
 
-geom_survreg = function(mapping = NULL, ..., dist = "weibull", data = NULL, inherit.aes = T, failure = F, conf.int = 0.95, length.out=1000, xmax=NULL){
+geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
-        class = "survivalverse_plot",
+        class = "surviveR_plot",
         fn = create_survreg_plot,
         mapping = mapping,
         extras = enquos(...),
@@ -120,9 +122,9 @@ geom_survreg = function(mapping = NULL, ..., dist = "weibull", data = NULL, inhe
 #' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
 #' @param conf.linewidth Line width of confidence interval lines.
 #' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha Opacity value between 0 and 1.  0=transparent.  1=fully opaque.
+#' @param conf.alpha The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
-#' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default=TRUE.
+#' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
 #' @import tidyverse
@@ -139,7 +141,7 @@ geom_survreg = function(mapping = NULL, ..., dist = "weibull", data = NULL, inhe
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# Lognormal survival fit with treatment variable
@@ -150,7 +152,7 @@ geom_survreg = function(mapping = NULL, ..., dist = "weibull", data = NULL, inhe
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), dist = "lognormal")
+#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), dist = "lognormal")
 #'
 #'
 #'# Parametric failure plot with treatment variable and 90% confidence interval
@@ -161,17 +163,19 @@ geom_survreg = function(mapping = NULL, ..., dist = "weibull", data = NULL, inhe
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_survreg(aes(time=ttf, time2=status, treatments = mfg_location), failure = T, conf.int = 0.90)
+#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T, conf.int = 0.90)
 #'
 #'
 #'# Weibull fit with treatment and strata variables
-#'mfg %>% ggplot() +
+#'mfg %>% 
+#'     ggplot() +
 #'     geom_survreg2(formula = Surv(ttf,status) ~ treatments + strata(mfg_location))
 #'     facet_grid(.~mfg_location)
 #'
 #'# ^ equivalent to
-#'# mfg %>% ggplot() +
-#'#      geom_survreg(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
+#'# mfg %>% 
+#'       ggplot() +
+#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
 #'#      facet_grid(.~mfg_location)
 #'
 #'
@@ -183,11 +187,11 @@ geom_survreg = function(mapping = NULL, ..., dist = "weibull", data = NULL, inhe
 #'
 #'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
 
-geom_survreg2 = function(formula = NULL, dist = "weibull", ..., data = NULL, inherit.aes = T, conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL){
+geom_survreg2 = function(formula = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
-        class = "survivalverse_plot",
+        class = "surviveR_plot",
         fn = create_survreg_plot,
         formula = formula,
         extras = enquos(...),
@@ -251,7 +255,7 @@ create_survreg_plot = function(args, plot){
         stop("invalid dist provided")
     }
 
-    plot$survivalverse_inherit = args$survivalverse_inherit
+    plot$surviveR_inherit = args$surviveR_inherit
 
     # Note: using flexsurvreg instead of survreg b/c it does pointwise CI's for the survival probs
     var_args=as.list(args$mapping)

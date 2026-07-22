@@ -8,7 +8,7 @@
 #' data that is well-modeled by the Weibull distribution should yield a linear
 #' log(-log(S(t)) vs. log(t) relationship.
 #'
-#' The [survivalverse::geom_weibull] function color-codes data points by the
+#' The [surviveR::geom_weibull] function color-codes data points by the
 #' treatment variable.  It assigns data point characters
 #' according to the strata variable.
 #'
@@ -26,8 +26,9 @@
 #' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
 #' @param conf.linewidth Line width of confidence interval lines.
 #' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha Opacity value between 0 and 1.  0=transparent.  1=fully opaque.
+#' @param conf.alpha The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
+#' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
 #' @import tidyverse
@@ -37,33 +38,33 @@
 #'# Univariate Weibull plot (no treatment or strata variables)
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_weibull(aes(time=ttf, time2=status))
+#'     geom_weibull(aes(time = ttf, time2 = status))
 #'
 #'
 #'# Weibull plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_weibull(aes(time=ttf, time2=status, treatments = mfg_location))
+#'     geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location))
 #'
 #'
 #'# Weibull plot with no line fit
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_weibull(aes(time=ttf, time2=status, treatments = mfg_location), line.fit = F)
+#'     geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location), line.fit = F)
 #'
 #'
 #'# Weibull plot with treatment and strata variables
 #'mfg %>% ggplot() +
-#'     geom_weibull(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
-#'     facet_grid(.~mfg_location, scale="free_x")
+#'     geom_weibull(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'     facet_grid(.~mfg_location, scale = "free_x")
 #'
 
-geom_weibull = function(mapping = NULL, ..., data = NULL, inherit.aes = T, line.fit = T){
+geom_weibull = function(mapping = NULL, ..., line.fit = T, data = NULL, inherit.aes = T){
     extras = list2(...)
     # Assigns all our data as attributes of a string so that we can access it later
     structure(
         "",
-        class = "survivalverse_plot",
+        class = "surviveR_plot",
         fn = create_weibull_plot,
         mapping = mapping,
         extras = enquos(...),
@@ -88,7 +89,7 @@ geom_weibull = function(mapping = NULL, ..., data = NULL, inherit.aes = T, line.
 create_weibull_plot = function(args, plot){
     args = km.survreg.coxph_wrangle_args(args, plot)
     args = wrangle_weibull_args(args)  # wrangle remaining args that are specific to geom_weibull
-    # plot$survivalverse_inherit = args$survivalverse_inherit
+    # plot$surviveR_inherit = args$surviveR_inherit
     args$survfit = survfit(args$formula, data = args$ds)
     add_weibull_layers(args, plot)
 }

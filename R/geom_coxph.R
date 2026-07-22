@@ -17,7 +17,7 @@
 #' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
 #' @param conf.linewidth Line width of confidence interval lines.
 #' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha Opacity value between 0 and 1.  0=transparent.  1=fully opaque.
+#' @param conf.alpha Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default=TRUE.
 #'
@@ -39,41 +39,43 @@
 #' @import survival
 #' @import tidyverse
 #' @seealso
-#' Note: the [survivalverse::geom_coxph2] function allows for an input of a survival formula rather than specifying elements through the aesthetics mapping. \cr
+#' Note: the [surviveR::geom_coxph2] function allows for an input of a survival formula rather than specifying elements through the aesthetics mapping. \cr
 #'
 #' @examples
 #'# CoxPH survival plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_coxph(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+#'     geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# CoxPH failure plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_coxph(aes(time=ttf, time2=status, treatments = mfg_location), failure = T)
+#'     geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T)
 #'
 #'
 #'# CoxPH survival plot with treatment and strata variables
-#'mfg %>% ggplot() +
-#'     geom_coxph(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
+#'mfg %>% 
+#'     ggplot() +
+#'     geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'
 #'# Overlaying KM curve on CoxPH fit
-#'mfg %>% ggplot() +
-#'     geom_coxph(aes(time=ttf, time2=status, treatments=device_type, strata=mfg_location)) +
+#'mfg %>% 
+#'     ggplot() +
+#'     geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
 #'     geom_km(color = "black", conf.int = F) +
 #'     facet_grid(.~mfg_location)
 #'
 #'# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the formula and failure variables.
 #'
 
-geom_coxph = function(mapping = NULL, ..., data = NULL, inherit.aes = T, conf.int = 0.95, failure = F){
+geom_coxph = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
-        class = "survivalverse_plot",
+        class = "surviveR_plot",
         fn = create_coxph_plot,
         mapping = mapping,
         extras = enquos(...),
@@ -105,11 +107,12 @@ geom_coxph = function(mapping = NULL, ..., data = NULL, inherit.aes = T, conf.in
 #' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
 #' @param conf.linewidth Line width of confidence interval lines.
 #' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha Opacity value between 0 and 1.  0=transparent.  1=fully opaque.
+#' @param conf.alpha The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
+#' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @details
-#' For description of the functionality, see the main version [survivalverse::geom_coxph]
+#' For description of the functionality, see the main version [surviveR::geom_coxph]
 #'
 #' @export
 #' @import survival
@@ -125,7 +128,7 @@ geom_coxph = function(mapping = NULL, ..., data = NULL, inherit.aes = T, conf.in
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_coxph(aes(time=ttf, time2=status, treatments = mfg_location), conf.int = 0.90)
+#'#      geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# CoxPH failure plot with treatment variable
@@ -140,18 +143,21 @@ geom_coxph = function(mapping = NULL, ..., data = NULL, inherit.aes = T, conf.in
 #'
 #'
 #'# CoxPH survival plot with treatment and strata variables
-#'mfg %>% ggplot() +
+#'mfg %>% 
+#'     ggplot() +
 #'     geom_coxph2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'# ^ equivalent to
-#'# mfg %>% ggplot() +
-#'#      geom_coxph(aes(time=ttf, time2=status, treatments = device_type, strata = mfg_location)) +
+#'# mfg %>% 
+#'#      ggplot() +
+#'#      geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
 #'#      facet_grid(.~mfg_location)
 #'
 #'
 #'# Overlaying KM curve on CoxPH fit
-#'mfg %>% ggplot() +
+#'mfg %>% 
+#'     ggplot() +
 #'     geom_coxph2(formula = Surv(ttf,status) ~ device_type + strata(mfg_location)) +
 #'     geom_km2(color = "black", conf.int = F) +
 #'     facet_grid(.~mfg_location)
@@ -161,11 +167,11 @@ geom_coxph = function(mapping = NULL, ..., data = NULL, inherit.aes = T, conf.in
 
 
 
-geom_coxph2 = function(formula = NULL, ..., data = NULL, inherit.aes=T, conf.int = 0.95, failure = F){
+geom_coxph2 = function(formula = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
-        class = "survivalverse_plot",
+        class = "surviveR_plot",
         fn = create_coxph_plot,
         formula = formula,
         extras = enquos(...),
@@ -193,7 +199,7 @@ create_coxph_plot = function(args, plot){
     }
     args = km.survreg.coxph_wrangle_args(args, plot)
 
-    plot$survivalverse_inherit = args$survivalverse_inherit
+    plot$surviveR_inherit = args$surviveR_inherit
     args$coxph = coxph(args$formula, data = args$ds)
     add_coxph_layers(args, plot)
 }
@@ -226,9 +232,9 @@ add_coxph_layers = function(args, plot){
     # CREATING THE PRIMARY LINE & CONFIDENCE INTERVAL RIBBON
 
     # non-aes settings for primary stepwise line
-    extra_args_primary = args$line_extra_args  # this is handled in ggplot_add.survivalverse_plot.R
+    extra_args_primary = args$line_extra_args  # this is handled in ggplot_add.surviveR_plot.R
     extra_args_primary = Filter(Negate(is.null), extra_args_primary)
-    conf_extra_args = args$conf_int_args  # this is handled in ggplot_add.survivalverse_plot.R
+    conf_extra_args = args$conf_int_args  # this is handled in ggplot_add.surviveR_plot.R
     conf_extra_args = Filter(Negate(is.null), conf_extra_args)
 
     # Treatments and Strata
