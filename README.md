@@ -3,7 +3,7 @@
 
 # surviveR
 
-<img src="man/figures/surviveR_logo.png" alt="" width="20%" style="display: block; margin: auto;" />
+<img src="man/figures/surviveR_logo.png" alt="" width="40%" style="display: block; margin: auto;" />
 
 The surviveR package is a reliability and survival data visualization
 tool that leverages the user-friendliness of the Tidyverse ecosystem.
@@ -22,7 +22,7 @@ CRAN repository. In the meantime, you can install the development
 version of `surviveR` via one of 2 methods–the remotes package (probably
 the easiest) or downloading the files directly from the GitHub.
 
-### Option 1: the remotes package
+### Option 1: the remotes package (if you already have a Github account)
 
 ``` r
 # install.packages("remotes")
@@ -34,7 +34,7 @@ the easiest) or downloading the files directly from the GitHub.
 # library(surviveR)
 ```
 
-### Option 2: GitHub
+### Option 2: Download directly from GitHub
 
 If downloading the package files directly from GitHub, please follow
 these steps:
@@ -159,93 +159,125 @@ head(device_repair,20)
 ## Survival functions
 
 The following sections provide a preview of the capabilities of the
-`surviveR` package. For more details, please reference the
-documentation.
+`surviveR` package. Each subsection contains examples for how to
+generate the same plot by specifying variables through the aesthetics
+mapping or a formula.
+
+For more details, please reference the documentation.
 
 ### Nonparametric: Kaplan-Meier curves
+
+<img src="man/figures/geom_km_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
 
 #### geom_km
 
 ``` r
+my_plot=
 mfg %>% 
      ggplot() +
      geom_km(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
      facet_grid(.~mfg_location)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
-
 #### geom_km2 (formula-based input)
 
 ``` r
+my_plot=
 mfg %>% 
      ggplot() +
      geom_km2( Surv(ttf, status) ~ device_type + strata(mfg_location) ) +
      facet_grid(.~mfg_location)
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
-
 ### Semiparametric: Cox Proportional Hazards curves
+
+<img src="man/figures/geom_coxph_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
 
 #### geom_coxph
 
 ``` r
+my_plot=
 mfg %>% 
      ggplot() +
      geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
      facet_grid(.~mfg_location)
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
-
 #### geom_coxph2
 
 ``` r
+my_plot=
 mfg %>% 
      ggplot() +
      geom_coxph2( Surv(ttf, status) ~ device_type + strata(mfg_location) ) +
      facet_grid(.~mfg_location)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
-
 ### Parametric regression curves
+
+<img src="man/figures/geom_survreg_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
 
 #### geom_survreg
 
 ``` r
+my_plot=
 mfg %>% 
      ggplot() +
      geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
      facet_grid(.~mfg_location)
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" alt="" width="100%" />
-
 #### geom_survreg2
 
 ``` r
+my_plot=
 mfg %>% 
      ggplot() +
      geom_survreg2( Surv(ttf, status) ~ device_type + strata(mfg_location) ) +
      facet_grid(.~mfg_location)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" alt="" width="100%" />
+### Overlaying Fits
+
+#### Layers with aesthetics mapping
+
+<img src="man/figures/layers1_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
+
+``` r
+my_plot=
+mfg %>%
+    ggplot() +
+    geom_survreg(
+     aes(time=ttf, time2=status, trt=device_type, strata=mfg_location)
+    ) +
+    geom_km() +
+    facet_grid(device_type ~ mfg_location, scale="free_x")
+```
+
+#### Layers with formulas
+
+<img src="man/figures/layers2_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
+
+``` r
+my_plot=
+mfg %>%
+    ggplot() +
+    geom_coxph2(Surv(ttf,status)~mfg_location) +
+    geom_km2(color="black", conf.int=F) +
+    facet_grid(.~mfg_location)
+```
 
 ### Weibull plot
+
+<img src="man/figures/geom_weibull_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
 
 #### geom_weibull
 
 ``` r
-mfg %>% 
+my_plot=mfg %>% 
      ggplot() +
      geom_weibull(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location))
-#> [1] TRUE
 ```
-
-<img src="man/figures/README-unnamed-chunk-12-1.png" alt="" width="100%" />
 
 ## In the works
 

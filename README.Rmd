@@ -34,7 +34,7 @@ load_all("/cloud/project/surviveR")
 
 # surviveR
 
-```{r, echo = FALSE, out.width = "20%", fig.align = "center"}
+```{r, echo = FALSE, out.width = "40%", fig.align = "center"}
 knitr::include_graphics("man/figures/surviveR_logo.png")
 ```
 
@@ -48,7 +48,7 @@ The surviveR package is a reliability and survival data visualization tool that 
 
 The `surviveR` package is currently under review for inclusion in the CRAN repository. In the meantime, you can install the development version of `surviveR` via one of 2 methods--the remotes package (probably the easiest) or downloading the files directly from the GitHub.
 
-### Option 1: the remotes package
+### Option 1: the remotes package (if you already have a Github account)
 
 ```{r}
 # install.packages("remotes")
@@ -60,7 +60,7 @@ The `surviveR` package is currently under review for inclusion in the CRAN repos
 # library(surviveR)
 ```
 
-### Option 2: GitHub
+### Option 2: Download directly from GitHub
 
 If downloading the package files directly from GitHub, please follow these steps:
 
@@ -112,13 +112,21 @@ head(device_repair,20)
 
 ## Survival functions
 
-The following sections provide a preview of the capabilities of the `surviveR` package.  For more details, please reference the documentation.
+The following sections provide a preview of the capabilities of the `surviveR` package.  Each subsection contains examples for how to generate the same plot by specifying variables through the aesthetics mapping or a formula.  
+
+For more details, please reference the documentation.
 
 ### Nonparametric: Kaplan-Meier curves
+
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_km_plot.png")
+```
 
 #### geom_km
 
 ```{r}
+my_plot=
 mfg %>% 
      ggplot() +
      geom_km(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
@@ -128,6 +136,7 @@ mfg %>%
 #### geom_km2 (formula-based input)
 
 ```{r}
+my_plot=
 mfg %>% 
      ggplot() +
      geom_km2( Surv(ttf, status) ~ device_type + strata(mfg_location) ) +
@@ -137,9 +146,14 @@ mfg %>%
 
 ### Semiparametric: Cox Proportional Hazards curves
 
+```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_coxph_plot.png")
+```
+
 #### geom_coxph
 
 ```{r}
+my_plot=
 mfg %>% 
      ggplot() +
      geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
@@ -149,17 +163,24 @@ mfg %>%
 #### geom_coxph2
 
 ```{r}
+my_plot=
 mfg %>% 
      ggplot() +
      geom_coxph2( Surv(ttf, status) ~ device_type + strata(mfg_location) ) +
      facet_grid(.~mfg_location)
 ```
 
+
 ### Parametric regression curves
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_survreg_plot.png")
+```
 
 #### geom_survreg
 
 ```{r}
+my_plot=
 mfg %>% 
      ggplot() +
      geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
@@ -169,21 +190,65 @@ mfg %>%
 #### geom_survreg2
 
 ```{r}
+my_plot=
 mfg %>% 
      ggplot() +
      geom_survreg2( Surv(ttf, status) ~ device_type + strata(mfg_location) ) +
      facet_grid(.~mfg_location)
 ```
 
+### Overlaying Fits
+
+
+#### Layers with aesthetics mapping
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("man/figures/layers1_plot.png")
+```
+
+```{r}
+my_plot=
+mfg %>%
+    ggplot() +
+    geom_survreg(
+     aes(time=ttf, time2=status, trt=device_type, strata=mfg_location)
+    ) +
+    geom_km() +
+    facet_grid(device_type ~ mfg_location, scale="free_x")
+```
+
+
+#### Layers with formulas
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("man/figures/layers2_plot.png")
+```
+
+```{r}
+my_plot=
+mfg %>%
+    ggplot() +
+    geom_coxph2(Surv(ttf,status)~mfg_location) +
+    geom_km2(color="black", conf.int=F) +
+    facet_grid(.~mfg_location)
+```
+
+
 ### Weibull plot
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_weibull_plot.png")
+```
 
 #### geom_weibull
 
 ```{r}
-mfg %>% 
+my_plot=mfg %>% 
      ggplot() +
      geom_weibull(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location))
 ```
+
+
 
 ## In the works
 
