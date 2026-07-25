@@ -74,7 +74,7 @@
 #'# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the mapping (time, time2, treatments, strata) and failure variables.
 
 
-geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
+geom_survreg = function(mapping = NULL, data = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
@@ -187,7 +187,7 @@ geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, 
 #'
 #'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
 
-geom_survreg2 = function(formula = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
+geom_survreg2 = function(formula = NULL, data = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",

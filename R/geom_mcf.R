@@ -66,7 +66,7 @@
 #'            conf.linewidth = 0.5, conf.color = "darkred", conf.alpha = 0.15)
 #'
 
-geom_mcf = function(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.aes = T) {
+geom_mcf = function(mapping = NULL, data = NULL, ..., conf.int = 0.95, inherit.aes = T) {
     # This function simply packages the inputs that are then dealt with when ggplot
     # tries to add an object of the "mcf_plot" class to a ggplot object
     extras = list2(...)

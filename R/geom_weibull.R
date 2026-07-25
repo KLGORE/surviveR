@@ -59,7 +59,7 @@
 #'     facet_grid(.~mfg_location, scale = "free_x")
 #'
 
-geom_weibull = function(mapping = NULL, ..., line.fit = T, data = NULL, inherit.aes = T){
+geom_weibull = function(mapping = NULL, ..., data = NULL, inherit.aes = T, line.fit = T){
     extras = list2(...)
     # Assigns all our data as attributes of a string so that we can access it later
     structure(
