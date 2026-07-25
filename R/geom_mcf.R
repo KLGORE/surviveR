@@ -1,16 +1,7 @@
 #' Create Mean Cumulative Function
 #'
 #' This function creates a Mean Cumulative Function (MCF) plot from the provided data.
-#'
-#' This function uses the mean cumulative function to create a nonparametric model fit within the Tidyverse ecosystem.
-#' The mean cumulative incidence function (MCF) is a nonparametric display for reparable systems. The MCF estimate is
-#' nonparametric because it has minimal assumptions and does not use a parametric model for the population MCF. The
-#' basic assumption of this estimate is that a population of cumulative functions exists, with one for each system in
-#' the population. It is also required that a system's observation time is not dependent on the history of the system.
-#' This would result in biased MCF estimators. The cumulative incidence function from Chapter 22 in "Statistical Methods
-#' for Reliability Data: Second Edition" (2022) by William Q. Meeker, Luis A. Escobar, and Francis G. Pascual is used in
-#' the creation of this function. The aesthetics of this function match those of the tidyverse.
-#'
+#' 
 #' The following Tidyverse aesthetics arguments are accepted in geom_mcf: color, fill, group, linetype, and linewidth.
 #'
 #' @param mapping Aesthetics mapping with the following inputs:
@@ -36,12 +27,30 @@
 #' @import tidyverse
 #' @import survival
 #'
-#'
+#' @details
+#' The mean cumulative function (MCF) is a nonparametric survival method used to model the average number of events for a repairable 
+#' system over time.  It is calculated as follows:
+#' 
+#' PUT IN FORMULA KLG!!!!!!!!!!!!!!
+#' where d=__, delta=__ risk set, ...
+#' \deq{}
+#' 
+#' 
+#' Confidence intervals displayed are Wald estimates, which leverage asymptotic normality assumptions BLAH BLAH BLAH
+#' 
+#' FORMULA FOR CONFIDENCE INTERVAL WALD
+#' 
+#' 
+#' For more statistical details, please reference chapter 22 of "Statistical Methods
+#' for Reliability Data: Second Edition" (2022) by William Q. Meeker, Luis A. Escobar, and Francis G. Pascual.
+#' 
+#' 
 #' @examples
 #'# Univariate MCF plot (no treatment or strata variables)
 #'device_repair %>% filter(device_type == "A") %>%
 #'    ggplot() + 
-#'    geom_mcf(aes(time = event_time, ids = device_id))
+#'    geom_mcf(aes(time = repair_time, ids = device_id))
+#'
 #'
 #'# MCF plot with treatment variable
 #'device_repair %>% 
@@ -56,7 +65,8 @@
 #'# MCF plot with treatment and strata variables
 #'device_repair %>% 
 #'    ggplot() + 
-#'    geom_mcf(aes(time = repair_time, ids = device_id, treatment = mfg_location, strata = device_type))
+#'    geom_mcf(aes(time = repair_time, ids = device_id, treatment = mfg_location, strata = device_type)) +
+#'    facet_grid(.~device_type)
 #'
 #'# MCF plot with additional confidence interval arguments
 #'device_repair %>% filter(device_type == "A") %>%
@@ -66,7 +76,7 @@
 #'            conf.linewidth = 0.5, conf.color = "darkred", conf.alpha = 0.15)
 #'
 
-geom_mcf = function(mapping = NULL, data = NULL, ..., conf.int = 0.95, inherit.aes = T) {
+geom_mcf = function(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.aes = T) {
     # This function simply packages the inputs that are then dealt with when ggplot
     # tries to add an object of the "mcf_plot" class to a ggplot object
     extras = list2(...)

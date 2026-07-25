@@ -74,7 +74,7 @@
 #'# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the mapping (time, time2, treatments, strata) and failure variables.
 
 
-geom_survreg = function(mapping = NULL, data = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, inherit.aes = T){
+geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
@@ -169,12 +169,12 @@ geom_survreg = function(mapping = NULL, data = NULL, dist = "weibull", ..., conf
 #'# Weibull fit with treatment and strata variables
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf,status) ~ treatments + strata(mfg_location))
+#'     geom_survreg2(formula = Surv(ttf,status) ~ device_type + strata(mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'# ^ equivalent to
 #'# mfg %>% 
-#'       ggplot() +
+#'#      ggplot() +
 #'#      geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
 #'#      facet_grid(.~mfg_location)
 #'
@@ -182,12 +182,12 @@ geom_survreg = function(mapping = NULL, data = NULL, dist = "weibull", ..., conf
 #'# Overlaying KM curve on top of parametric fit
 #' mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf,status) ~ mfg_location)) +
+#'     geom_survreg2(formula = Surv(ttf,status) ~ mfg_location) +
 #'     geom_km2(conf.int = F)
 #'
 #'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
 
-geom_survreg2 = function(formula = NULL, data = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, inherit.aes = T){
+geom_survreg2 = function(formula = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",

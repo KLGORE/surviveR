@@ -40,7 +40,7 @@ geom_event = function(mapping = NULL, ..., inherit.aes = T, order = T, xmax = NU
     #Check if they piped in
     structure(
         "",
-        class = "survivalverse_plot",
+        class = "surviveR_plot",
         fn = create_event_plot,
         mapping = mapping,
         extras = list2(...),
@@ -73,7 +73,7 @@ create_event_plot = function(args, plot){
     args = wrangle_event_global_args(args)
     # print("post wrangle_event_global_args(args)"); print(args)
     args = event_wrangle_args(args, plot)
-    plot$survivalverse_inherit = args$survivalverse_inherit
+    plot$surviveR_inherit = args$surviveR_inherit
     add_event_layers(args, plot)
 }
 

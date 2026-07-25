@@ -71,7 +71,7 @@
 #'# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the formula and failure variables.
 #'
 
-geom_coxph = function(mapping = NULL, data = NULL, ..., conf.int = 0.95, failure = F, inherit.aes = T){
+geom_coxph = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
@@ -167,7 +167,7 @@ geom_coxph = function(mapping = NULL, data = NULL, ..., conf.int = 0.95, failure
 
 
 
-geom_coxph2 = function(formula = NULL, data = NULL, ..., conf.int = 0.95, failure = F, inherit.aes = T){
+geom_coxph2 = function(formula = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",

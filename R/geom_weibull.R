@@ -27,6 +27,7 @@
 #' @param conf.linewidth Line width of confidence interval lines.
 #' @param conf.color Color of confidence interval lines. Value provided must be a string.
 #' @param conf.alpha The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.
+#' @param line.fit TRUE or FALSE.  Indicates whether a line should be plotted for each subgroup.  Default = TRUE.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
@@ -59,7 +60,7 @@
 #'     facet_grid(.~mfg_location, scale = "free_x")
 #'
 
-geom_weibull = function(mapping = NULL, ..., data = NULL, inherit.aes = T, line.fit = T){
+geom_weibull = function(mapping = NULL, ..., line.fit = T, data = NULL, inherit.aes = T){
     extras = list2(...)
     # Assigns all our data as attributes of a string so that we can access it later
     structure(
@@ -179,7 +180,6 @@ wrangle_weibull_args=function(args){
 
 add_weibull_layers = function(args, plot){
 
-    print(args$line.fit)
     var_args=as.list(args$mapping)
     Treatment = as_quosure(var_args$treatments)
     Strata = as_quosure(var_args$strata)

@@ -73,49 +73,62 @@ check_length_1=function(args_list){
 }
 
 
-check_color_args=function(extras_arg){  # "color", "conf.color", "fill", "conf.fill"
+check_color_args=function(arg_name,extras_arg){  # "color", "conf.color", "fill", "conf.fill"
     arg_value=eval_tidy(extras_arg)
-    if(is_string(arg_value)){
+    if(length(arg_value)!=1){
+        stop(paste0(arg_name," must be of length 1."))
+    } else if(is_string(arg_value)){
         arg_value=as.character(arg_value)
     } else if(is.na(arg_value)){
         arg_value="transparent"
     } else{
-        stop(paste("Invalid input for ", as_name(quo_get_expr(extras_arg)),": ",arg_value))
+        stop(paste0("Invalid input for ", arg_name,": ",arg_value))
     }
     arg_value
 }
 
 
-check_linetype_args=function(extras_arg){
+check_linetype_args=function(arg_name,extras_arg){ # "linetype", "conf.linetype"
     arg_value=eval_tidy(extras_arg)
-    if(is.numeric(extras_arg) | is_string(extras_arg)){
-        args$extras$linetype = args$extras$linetype
+    #if(is.numeric(extras_arg) | is_string(extras_arg)){
+    if(length(arg_value)!=1){
+        stop(paste0(arg_name," must be of length 1."))
+    } else if(is.numeric(arg_value) | is_string(arg_value)){
+        arg_value=arg_value
+        print(arg_value)
+        #args$extras$linetype = args$extras$linetype
     } else{
-        stop(paste("Invalid input for linetype ", args$extras$linetype))
+        #stop(paste("Invalid input for linetype ", args$extras$linetype))
+        stop(paste0("Invalid input for ", arg_name,": ",arg_value))
+        
     }
     arg_value
 }
 
 
-check_numeric_args=function(extras_arg){ # linewidth, conf.linewidth, size
+check_numeric_args=function(arg_name, extras_arg){ # linewidth, conf.linewidth, size
     arg_value=eval_tidy(extras_arg)
-    if(is.numeric(arg_value) & arg_value>=0){
+    if(length(arg_value)!=1){
+        stop(paste0(arg_name," must be of length 1."))
+    } else if(is.numeric(arg_value) & arg_value>=0){
         arg_value = arg_value
     } else{
-        stop(paste("Invalid input for ", as_name(quo_get_expr(extras_arg)),": ",arg_value))
+        stop(paste0("Invalid input for ", arg_name,": ",arg_value))
     }
+    arg_value
 }
 
 
-check_alpha_args=function(extras_arg){
+check_alpha_args=function(arg_name,extras_arg){
     arg_value=eval_tidy(extras_arg)
-
-    if(as.numeric(arg_value)>=0 & as.numeric(arg_value<=1)){
+    if(length(arg_value)!=1){
+        stop(paste0(arg_name," must be of length 1."))
+    } else if(as.numeric(arg_value)>=0 & as.numeric(arg_value<=1)){
         arg_value=as.numeric(arg_value)
     } else if(is.na(arg_value)){
         arg_value=0
     } else{
-        stop(paste("Invalid input for ", as_name(quo_get_expr(extras_arg)),": ",arg_value))
+        stop(paste0("Invalid input for ", arg_name,": ",arg_value))
     }
     arg_value
 }
@@ -153,11 +166,13 @@ wrangle_global_args=function(args){   # wrangle non-aes args
     # filter out all of the non-convenient
     for(i in names(args$extras)){
         if(i %in% c("color", "conf.color", "fill", "conf.fill")){
-            args$extras[[i]]=check_color_args(args$extras[[i]])
+            args$extras[[i]]=check_color_args(i,args$extras[[i]])
         } else if(i %in% c("linewidth", "conf.linewidth", "size")){
-            args$extras[[i]]=check_numeric_args(args$extras[[i]])
+            args$extras[[i]]=check_numeric_args(i,args$extras[[i]])
         } else if(i %in% c("alpha", "conf.alpha")){
-            args$extras[[i]]=check_alpha_args(args$extras[[i]])
+            args$extras[[i]]=check_alpha_args(i,args$extras[[i]])
+        } else if (i %in% c("linetype", "conf.linetype")){  # EMMA ADDED
+            args$extras[[i]]=check_linetype_args(i,args$extras[[i]])
         }
     }
 
@@ -182,7 +197,7 @@ wrangle_global_args=function(args){   # wrangle non-aes args
     )
 
     args$line_extra_args = Filter(Negate(is.null), args$line_extra_args)
-
+    
     #  ------------------------------------- PROCESS THE CONFIDENCE INTERVAL ARGUMENTS -------------------------------------
 
     # conf.alpha (set default if user didn't provide an input)
@@ -241,10 +256,10 @@ km.survreg.coxph_wrangle_args = function(args, plot){
 
     # data inheritance
     inheriting = c("mapping","failure","formula")  # not sure about formula... also need to incorporate inherit.aes
-    if (is.null(plot$survivalverse_inherit)){
-        args$survivalverse_inherit = args[inheriting]
+    if (is.null(plot$surviveR_inherit)){
+        args$surviveR_inherit = args[inheriting]
     } else{
-        args$survivalverse_inherit <- args[inheriting] <- plot$survivalverse_inherit
+        args$surviveR_inherit <- args[inheriting] <- plot$surviveR_inherit
     }
 
     var_args=as.list(args$mapping) # reprocess the mapping
@@ -451,10 +466,10 @@ mcf_wrangle_args = function(args, plot){
 
     # data inheritance
     inheriting = "mapping"
-    if (is.null(plot$survivalverse_inherit)){
-        args$survivalverse_inherit = args[inheriting]
+    if (is.null(plot$surviveR_inherit)){
+        args$surviveR_inherit = args[inheriting]
     } else{
-        args[inheriting] = args$survivalverse_inherit = plot$survivalverse_inherit
+        args[inheriting] = args$surviveR_inherit = plot$surviveR_inherit
     }
 
     time=eval_tidy(var_args$time, args$data)
@@ -533,11 +548,13 @@ wrangle_event_global_args=function(args){
     # filter out all of the non-convenient
     for(i in names(args$extras)){
         if(i %in% c("color", "conf.color", "fill", "conf.fill", "segment.color")){
-            args$extras[[i]]=check_color_args(args$extras[[i]])
+            args$extras[[i]]=check_color_args(i,args$extras[[i]])
         } else if(i %in% c("linewidth", "conf.linewidth", "size")){
-            args$extras[[i]]=check_numeric_args(args$extras[[i]])
+            args$extras[[i]]=check_numeric_args(i,args$extras[[i]])
         } else if(i %in% c("alpha", "conf.alpha")){
-            args$extras[[i]]=check_alpha_args(args$extras[[i]])
+            args$extras[[i]]=check_alpha_args(i,args$extras[[i]])
+        } else if (i %in% c("linetype", "conf.linetype")){  # EMMA ADDED
+            args$extras[[i]]=check_linetype_args(i,args$extras[[i]])
         }
     }
 
@@ -611,10 +628,10 @@ event_wrangle_args = function(args, plot){
 
     # data inheritance
     inheriting = "mapping"
-    if (is.null(plot$survivalverse_inherit)){
-        args$survivalverse_inherit = args[inheriting]
+    if (is.null(plot$surviveR_inherit)){
+        args$surviveR_inherit = args[inheriting]
     } else{
-        args[inheriting] = args$survivalverse_inherit = plot$survivalverse_inherit
+        args[inheriting] = args$surviveR_inherit = plot$surviveR_inherit
     }
 
     time=eval_tidy(var_args$time, args$data)

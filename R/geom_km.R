@@ -92,7 +92,7 @@
 #'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
 #'
 
-geom_km = function(mapping = NULL, data = NULL, ..., conf.int = 0.95, failure = F, inherit.aes = T){
+geom_km = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
     extras = list2(...)
     # Assigns all our data as attributes of a string so that we can access it later
     structure(
@@ -217,7 +217,7 @@ geom_km = function(mapping = NULL, data = NULL, ..., conf.int = 0.95, failure = 
 #'
 
 
-geom_km2 = function(formula = NULL, data = NULL, ..., conf.int = 0.95, failure = F, inherit.aes = T){
+geom_km2 = function(formula = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
     extras = list2(...)
     #Check if they piped in
     if (!is.null(formula)){
