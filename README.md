@@ -167,8 +167,6 @@ For more details, please reference the documentation.
 
 ### Nonparametric: Kaplan-Meier curves
 
-<img src="man/figures/geom_km_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
-
 #### geom_km
 
 ``` r
@@ -189,9 +187,10 @@ mfg %>%
      facet_grid(.~mfg_location)
 ```
 
-### Semiparametric: Cox Proportional Hazards curves
+Resulting plot:
+<img src="man/figures/geom_km_plot.png" alt="" width="80%" style="display: block; margin: auto;" />
 
-<img src="man/figures/geom_coxph_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
+### Semiparametric: Cox Proportional Hazards curves
 
 #### geom_coxph
 
@@ -213,9 +212,10 @@ mfg %>%
      facet_grid(.~mfg_location)
 ```
 
-### Parametric regression curves
+Resulting plot:
+<img src="man/figures/geom_coxph_plot.png" alt="" width="80%" style="display: block; margin: auto;" />
 
-<img src="man/figures/geom_survreg_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
+### Parametric regression curves
 
 #### geom_survreg
 
@@ -237,11 +237,12 @@ mfg %>%
      facet_grid(.~mfg_location)
 ```
 
+Resulting plot:
+<img src="man/figures/geom_survreg_plot.png" alt="" width="80%" style="display: block; margin: auto;" />
+
 ### Overlaying Fits
 
 #### Layers with aesthetics mapping
-
-<img src="man/figures/layers1_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
 
 ``` r
 my_plot=
@@ -254,9 +255,10 @@ mfg %>%
     facet_grid(device_type ~ mfg_location, scale="free_x")
 ```
 
-#### Layers with formulas
+Resulting plot:
+<img src="man/figures/layers1_plot.png" alt="" width="80%" style="display: block; margin: auto;" />
 
-<img src="man/figures/layers2_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
+#### Layers with formulas
 
 ``` r
 my_plot=
@@ -267,17 +269,36 @@ mfg %>%
     facet_grid(.~mfg_location)
 ```
 
-### Weibull plot
+Resulting plot:
+<img src="man/figures/layers2_plot.png" alt="" width="80%" style="display: block; margin: auto;" />
 
-<img src="man/figures/geom_weibull_plot.png" alt="" width="70%" style="display: block; margin: auto;" />
+### Other
 
-#### geom_weibull
+#### Weibull plots
 
 ``` r
 my_plot=mfg %>% 
      ggplot() +
      geom_weibull(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location))
 ```
+
+Resulting plot:
+<img src="man/figures/geom_weibull_plot.png" alt="" width="80%" style="display: block; margin: auto;" />
+
+#### Mean Cumulative Function (MCF) Plots
+
+``` r
+my_plot=
+device_repair %>%
+    ggplot()+
+    geom_mcf(
+        aes(time = repair_time, ids = device_id, trt = mfg_location, strata = device_type),
+        conf.fill = "gray", conf.alpha = 0.35) +
+    facet_grid(device_type~mfg_location)
+```
+
+Resulting plot:
+<img src="man/figures/geom_mcf_plot.png" alt="" width="80%" style="display: block; margin: auto;" />
 
 ## In the works
 

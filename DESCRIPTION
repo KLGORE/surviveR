@@ -3,7 +3,7 @@ Title: Tidyverse-based Reliability and Survival Data Visualization Tool
 Version: 1.0.0
 Authors@R: c(
     person(
-        given="Kristen", family="Gore", email="kgore@willamette.edu", role = c("aut", "cre")
+        given="Kristen", family="Gore", email="kgore@willamette.edu", role = c("aut", "cre", "cph")
     ),
     person(
         given="Samuel", family="Jeffe", email="sajeffe@willamette.edu", role = c("aut")
@@ -21,20 +21,26 @@ Description: A suite of reliability/survival data visualization tools that lever
     the Tidyverse Grammar of Graphics.  Time-based aesthetics may be specified
     alongside standard non-aesthetic arguments to generate highly customizable
     graphs.
-License: `use_gpl3_license()`
+License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd"))
 Imports: 
-    tidyverse,
     ggplot2,
     survival,
     flexsurv,
-    broom
+    broom,
+    rlang,
+    dplyr,
+    forcats,
+    stringr,
+    tidyr,
+    scales,
+    vctrs
 LazyData: true
 Config/roxygen2/version: 8.0.0
 URL: https://github.com/KLGORE/surviveR, https://klgore.github.io/surviveR/
 BugReports: https://github.com/KLGORE/surviveR/issues
 Suggests: 
     knitr,
-    rmarkdown
-VignetteBuilder: knitr
+    rmarkdown,
+    systemfonts

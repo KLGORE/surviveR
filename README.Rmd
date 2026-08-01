@@ -8,8 +8,7 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.path = "man/figures/"
 )
 
 library(tidyverse)
@@ -118,11 +117,6 @@ For more details, please reference the documentation.
 
 ### Nonparametric: Kaplan-Meier curves
 
-
-```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
-knitr::include_graphics("man/figures/geom_km_plot.png")
-```
-
 #### geom_km
 
 ```{r}
@@ -144,11 +138,13 @@ mfg %>%
 ```
 
 
-### Semiparametric: Cox Proportional Hazards curves
-
-```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
-knitr::include_graphics("man/figures/geom_coxph_plot.png")
+Resulting plot:
+```{r, echo = FALSE, fig.width = 12, fig.height = 7.5, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_km_plot.png")
 ```
+
+
+### Semiparametric: Cox Proportional Hazards curves
 
 #### geom_coxph
 
@@ -171,11 +167,12 @@ mfg %>%
 ```
 
 
-### Parametric regression curves
-
-```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
-knitr::include_graphics("man/figures/geom_survreg_plot.png")
+Resulting plot:
+```{r, echo = FALSE, fig.width = 12, fig.height = 7.5, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_coxph_plot.png")
 ```
+
+### Parametric regression curves
 
 #### geom_survreg
 
@@ -197,14 +194,15 @@ mfg %>%
      facet_grid(.~mfg_location)
 ```
 
+
+Resulting plot:
+```{r, echo = FALSE, fig.width = 12, fig.height = 7.5, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_survreg_plot.png")
+```
+
 ### Overlaying Fits
 
-
 #### Layers with aesthetics mapping
-
-```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
-knitr::include_graphics("man/figures/layers1_plot.png")
-```
 
 ```{r}
 my_plot=
@@ -218,11 +216,13 @@ mfg %>%
 ```
 
 
-#### Layers with formulas
-
-```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
-knitr::include_graphics("man/figures/layers2_plot.png")
+Resulting plot:
+```{r, echo = FALSE, fig.width = 12, fig.height = 7.5, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("man/figures/layers1_plot.png")
 ```
+
+
+#### Layers with formulas
 
 ```{r}
 my_plot=
@@ -234,13 +234,14 @@ mfg %>%
 ```
 
 
-### Weibull plot
-
-```{r, echo = FALSE, fig.width = 10, fig.height = 6, out.width = "70%", fig.align = "center"}
-knitr::include_graphics("man/figures/geom_weibull_plot.png")
+Resulting plot:
+```{r, echo = FALSE, fig.width = 12, fig.height = 7.5, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("man/figures/layers2_plot.png")
 ```
 
-#### geom_weibull
+### Other
+
+#### Weibull plots
 
 ```{r}
 my_plot=mfg %>% 
@@ -249,6 +250,28 @@ my_plot=mfg %>%
 ```
 
 
+Resulting plot:
+```{r, echo = FALSE, fig.width = 12, fig.height = 7.5, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_weibull_plot.png")
+```
+
+#### Mean Cumulative Function (MCF) Plots
+
+```{r}
+my_plot=
+device_repair %>%
+    ggplot()+
+    geom_mcf(
+        aes(time = repair_time, ids = device_id, trt = mfg_location, strata = device_type),
+        conf.fill = "gray", conf.alpha = 0.35) +
+    facet_grid(device_type~mfg_location)
+```
+
+
+Resulting plot:
+```{r, echo = FALSE, fig.width = 12, fig.height = 7.5, out.width = "80%", fig.align = "center"}
+knitr::include_graphics("man/figures/geom_mcf_plot.png")
+```
 
 ## In the works
 

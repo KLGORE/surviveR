@@ -3,3 +3,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^LICENSE\.md$
+^surviveR\.Rproj$
+^CRAN-SUBMISSION$
+^cran-comments\.md$
