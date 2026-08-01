@@ -31,7 +31,3 @@
 #'   \item{mfg_location}{Manufacturing location (OR, WA, or CA)}
 #' }
 "device_repair"
-
-
-
-

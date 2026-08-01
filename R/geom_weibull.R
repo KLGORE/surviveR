@@ -32,10 +32,21 @@
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
-#' @import tidyverse
 #' @import survival
+#' @import broom
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import utils
+#' @importFrom dplyr filter
 #'
 #' @examples
+#'library(ggplot2); library(dplyr)
+#'
 #'# Univariate Weibull plot (no treatment or strata variables)
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
@@ -45,22 +56,25 @@
 #'# Weibull plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location))
+#'     geom_weibull(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location))
 #'
 #'
 #'# Weibull plot with no line fit
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location), line.fit = F)
+#'     geom_weibull(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location), line.fit = FALSE)
 #'
 #'
 #'# Weibull plot with treatment and strata variables
 #'mfg %>% ggplot() +
-#'     geom_weibull(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'     geom_weibull(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
 #'     facet_grid(.~mfg_location, scale = "free_x")
 #'
 
-geom_weibull = function(mapping = NULL, ..., line.fit = T, data = NULL, inherit.aes = T){
+geom_weibull = function(mapping = NULL, ..., line.fit = TRUE, data = NULL, inherit.aes = TRUE){
     extras = list2(...)
     # Assigns all our data as attributes of a string so that we can access it later
     structure(

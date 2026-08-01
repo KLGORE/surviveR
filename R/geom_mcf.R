@@ -1,8 +1,6 @@
 #' Create Mean Cumulative Function
 #'
 #' This function creates a Mean Cumulative Function (MCF) plot from the provided data.
-#' 
-#' The following Tidyverse aesthetics arguments are accepted in geom_mcf: color, fill, group, linetype, and linewidth.
 #'
 #' @param mapping Aesthetics mapping with the following inputs:
 #'     * time: Event times (must be numeric). 
@@ -24,28 +22,58 @@
 #'
 #'
 #' @export
-#' @import tidyverse
 #' @import survival
+#' @import broom
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import utils
+#' @importFrom dplyr filter
+#' @importFrom dplyr lag
+#' @importFrom stats as.formula
+#' @importFrom stats predict
+#' @importFrom stats qnorm
+#' @importFrom stats terms
 #'
 #' @details
-#' The mean cumulative function (MCF) is a nonparametric survival method used to model the average number of events for a repairable 
-#' system over time.  It is calculated as follows:
+#' The mean cumulative function (MCF) is a nonparametric survival statistic used to model the average number of events for a repairable 
+#' system.  Suppose a system consists of \eqn{N} total system units (hereby termed "units").  Furthermore, let \eqn{i} index the units, and let \eqn{k} index all event times \eqn{t}.  
+#' Vector \eqn{(t_1, t_2, ..., t_n)} represents the collective event times of all units in the system.  
 #' 
-#' PUT IN FORMULA KLG!!!!!!!!!!!!!!
-#' where d=__, delta=__ risk set, ...
-#' \deq{}
+#' Each raw observation minimally consists of the following: 
+#'  * The unit ID: \eqn{i}
+#'  * The event time: \eqn{t}
+#'  * The risk set status for unit \eqn{i} at time \eqn{t}: \eqn{\delta_i(t)}
+#'    where values of 1 indicate that unit \eqn{i} is still active (i.e. in the risk set) and values of 0 indicate that unit \eqn{i} is no longer active (i.e. NOT in the risk set)
+#'  * The event status of unit \eqn{i} at time \eqn{t}: \eqn{d_i(t_k)}
+#'    where values of 1 indicate that an event occurred for unit \eqn{i} at time \eqn{t_k} and values of 0 indicate that an event did NOT occur for unit \eqn{i} at time \eqn{t_k}.
 #' 
+#' Letting \eqn{d_.(t_k)} denote the total number of events that happen at time \eqn{t_k} and \eqn{\delta_.(t_k)} 
+#' represent the risk set at time \eqn{t_k}, the MCF estimate at time \eqn{t_j} may be expressed as 
 #' 
-#' Confidence intervals displayed are Wald estimates, which leverage asymptotic normality assumptions BLAH BLAH BLAH
+#' \deqn{\sum_{k=1}^n \frac{d_.(t_k)}{\delta_.(t_k)} = \sum_{k=1}^n \bar{d}(t_k)}
 #' 
-#' FORMULA FOR CONFIDENCE INTERVAL WALD
+#' where \eqn{\bar{d}(t_k)} is the mean cumulative number of events per unit at time \eqn{t_k}.  
 #' 
+#' The confidence intervals geom_mcf displays are Wald estimates, which leverage asymptotic normality assumptions in their calculation.  
+#' The nonparametric standard deviation for the MCF at time \eqn{t_k} is estimated using the following expression:
 #' 
-#' For more statistical details, please reference chapter 22 of "Statistical Methods
-#' for Reliability Data: Second Edition" (2022) by William Q. Meeker, Luis A. Escobar, and Francis G. Pascual.
+#' \deqn{\sqrt{ \sum_{i=1}^n \left\{ \sum_{k=1}^j  \frac{\delta_i(t_k)}{\delta_.(t_k)} \times [d_i(t_k) - \bar{d}(t_k)] \right\} ^2}}
+#' Note: The statistical validity (read: bias) of the above MCF statistics hinges on a fairly strong assumption: the recurrence rate of the events
+#' is constant for all units.  This assumption can be violated in common scenarios, so one must check diagnostics to verify the appropriateness of the metric.
+#' 
+#' Many of the details and notation of this page were heavily adapted from "Statistical Methods
+#' for Reliability Data: Second Edition" (2022) by William Q. Meeker, Luis A. Escobar, and Francis G. Pascual.  
+#' For more statistical details on the MCF methodology, please reference pages 45-47 and 522-528 of this fantastic book.
 #' 
 #' 
 #' @examples
+#'library(ggplot2); library(dplyr)
+#'
 #'# Univariate MCF plot (no treatment or strata variables)
 #'device_repair %>% filter(device_type == "A") %>%
 #'    ggplot() + 
@@ -55,28 +83,34 @@
 #'# MCF plot with treatment variable
 #'device_repair %>% 
 #'    ggplot() + 
-#'    geom_mcf(aes(time = repair_time, ids = device_id, treatment = mfg_location))
+#'    geom_mcf(aes(time = repair_time, ids = device_id, 
+#'       treatment = mfg_location))
+#'    
 #'    
 #'# MCF plot with strata variable 
 #'device_repair %>% 
 #'    ggplot() + 
-#'    geom_mcf(aes(time = repair_time, ids = device_id, strata = device_type))
+#'    geom_mcf(aes(time = repair_time, ids = device_id, 
+#'       strata = device_type))
+#'
 #'
 #'# MCF plot with treatment and strata variables
 #'device_repair %>% 
 #'    ggplot() + 
-#'    geom_mcf(aes(time = repair_time, ids = device_id, treatment = mfg_location, strata = device_type)) +
+#'    geom_mcf(aes(time = repair_time, ids = device_id, 
+#'       treatment = mfg_location, strata = device_type)) +
 #'    facet_grid(.~device_type)
 #'
 #'# MCF plot with additional confidence interval arguments
 #'device_repair %>% filter(device_type == "A") %>%
 #'    ggplot() + 
-#'    geom_mcf(aes(time = repair_time, ids = device_id), conf.int = 0.95,
-#'            conf.fill = "gray30", conf.linetype = "dotted",
-#'            conf.linewidth = 0.5, conf.color = "darkred", conf.alpha = 0.15)
+#'    geom_mcf(aes(time = repair_time, ids = device_id), 
+#'           conf.int = 0.95, conf.fill = "gray30", 
+#'           conf.linetype = "dotted", conf.linewidth = 0.5, 
+#'           conf.color = "darkred", conf.alpha = 0.15)
 #'
 
-geom_mcf = function(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.aes = T) {
+geom_mcf = function(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.aes = TRUE) {
     # This function simply packages the inputs that are then dealt with when ggplot
     # tries to add an object of the "mcf_plot" class to a ggplot object
     extras = list2(...)

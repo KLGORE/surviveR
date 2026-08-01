@@ -3,10 +3,13 @@
 #' Create a parametric survival plot using aesthetic mapping arguments
 #'
 #' This function allows users to visualize parametric survival fits using
-#' the ggplot Grammar of Graphics.  It leverages the flexsurvreg function in the [flexsurv::flexsurv-package]
-#' package.  For more information on the distributions supported by geom_survreg and
-#' geom_survreg2, please see the documentation for [flexsurv::flexsurvreg].  Note that
-#' flexsurvreg (and, by extension, geom_survreg2) may run sluggishly with large datasets.
+#' the ggplot Grammar of Graphics.  It leverages the flexsurvreg function in the 
+#' [flexsurv::flexsurv-package] package.  For more information on the 
+#' distributions supported by geom_survreg and geom_survreg2, please see the 
+#' documentation for [flexsurv::flexsurvreg].  
+#' 
+#' Note that flexsurvreg (and, by extension, geom_survreg2) may run sluggishly 
+#' with large datasets.
 #'
 #' @param mapping Aesthetics mapping with the following inputs: \cr
 #'    * time: time column \cr
@@ -32,49 +35,71 @@
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
-#' @import tidyverse
 #' @import survival
 #' @import broom
 #' @import flexsurv
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import utils
+#' @importFrom dplyr filter
+#' @importFrom stats as.formula
+#' @importFrom stats predict
+#' @importFrom stats qnorm
+#' @importFrom stats terms
 #'
 #' @seealso
-#' The alternate version that accepts formulas: [geom_survreg2] \cr
+#' The alternate version that accepts formulas: [surviveR::geom_survreg2] \cr
+#' 
 #' @examples
+#'library(ggplot2); library(dplyr)
+#'
 #'# Parametric survival plot with treatment variable (default: Weibull distribution)
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+#'     geom_survreg(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# Lognormal survival fit with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), dist = "lognormal")
+#'     geom_survreg(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location), dist = "lognormal")
 #'
 #'
 #'# Parametric failure plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T, conf.int = 0.90)
+#'     geom_survreg(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location), failure = TRUE, 
+#'         conf.int = 0.90)
 #'
 #'
 #'# Weibull fit with treatment and strata variables
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'     geom_survreg(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'
 #'# Overlaying KM curve on top of parametric fit
 #' mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location)) +
-#'     geom_km(conf.int = F)
+#'     geom_survreg(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location)) +
+#'     geom_km(conf.int = FALSE)
 #'
-#'# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the mapping (time, time2, treatments, strata) and failure variables.
+#'# Note: By default, geom_km, geom_coxph, and 
+#'# geom_survreg inherit the mapping (time, time2, treatments, strata) and failure variables.
 
 
-geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
+geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, failure = FALSE, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",
@@ -99,10 +124,14 @@ geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, 
 #' Create a parametric survival plot using formula-based arguments
 #'
 #' This function allows users to visualize parametric survival fits using
-#' the ggplot Grammar of Graphics.  It leverages the flexsurvreg function in the [flexsurv::flexsurv-package]
-#' package.  For more information on the distributions supported by geom_survreg and
-#' geom_survreg2, please see the documentation for [flexsurv::flexsurvreg].  Note that
-#' flexsurvreg (and, by extension, geom_survreg2) may run sluggishly with large datasets.
+#' the ggplot Grammar of Graphics.  It leverages the flexsurvreg function in 
+#' the [flexsurv::flexsurv-package] package.  
+#' 
+#' For more information on the distributions supported by geom_survreg and
+#' geom_survreg2, please see the documentation for [flexsurv::flexsurvreg].  
+#' 
+#' Note that flexsurvreg (and, by extension, geom_survreg2) may run sluggishly 
+#' with large datasets.
 #'
 #'
 #' @param formula Survival formula
@@ -127,55 +156,81 @@ geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, 
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
-#' @import tidyverse
 #' @import survival
 #' @import broom
 #' @import flexsurv
-#'
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import utils
+#' @importFrom dplyr filter
+#' @importFrom stats as.formula
+#' @importFrom stats predict
+#' @importFrom stats qnorm
+#' @importFrom stats terms
+#' 
 #' @examples
+#'library(ggplot2); library(dplyr)
+#'
 #'# Parametric survival plot with treatment variable (default: Weibull distribution)
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, conf.int = 0.90)
+#'     geom_survreg2(
+#'         formula = Surv(ttf,status) ~ mfg_location, 
+#'         conf.int = 0.90)
 #'
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+#'#      geom_survreg(aes(time = ttf, time2 = status, 
+#'#           treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# Lognormal survival fit with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, dist = "lognormal")
+#'     geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, 
+#'         dist = "lognormal")
 #'
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), dist = "lognormal")
+#'#      geom_survreg(aes(time = ttf, time2 = status, 
+#'#           treatments = mfg_location), dist = "lognormal")
 #'
 #'
 #'# Parametric failure plot with treatment variable and 90% confidence interval
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, failure = T, conf.int = 0.90)
+#'     geom_survreg2(
+#'         formula = Surv(ttf,status) ~ mfg_location, 
+#'         failure = TRUE, conf.int = 0.90)
 #'
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T, conf.int = 0.90)
+#'#      geom_survreg(aes(time = ttf, time2 = status, 
+#'#           treatments = mfg_location), 
+#'#           failure = TRUE, conf.int = 0.90)
 #'
 #'
 #'# Weibull fit with treatment and strata variables
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf,status) ~ device_type + strata(mfg_location)) +
+#'     geom_survreg2(
+#'         formula = Surv(ttf,status) ~ device_type + strata(mfg_location)
+#'     ) +
 #'     facet_grid(.~mfg_location)
 #'
 #'# ^ equivalent to
 #'# mfg %>% 
 #'#      ggplot() +
-#'#      geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'#      geom_survreg(aes(time = ttf, time2 = status, 
+#'#           treatments = device_type, strata = mfg_location)) +
 #'#      facet_grid(.~mfg_location)
 #'
 #'
@@ -183,11 +238,12 @@ geom_survreg = function(mapping = NULL, dist = "weibull", ..., conf.int = 0.95, 
 #' mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
 #'     geom_survreg2(formula = Surv(ttf,status) ~ mfg_location) +
-#'     geom_km2(conf.int = F)
+#'     geom_km2(conf.int = FALSE)
 #'
-#'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
+#'# Note: By default, geom_km2, geom_coxph2, and 
+#'# geom_survreg2 inherit the formula and failure variables.
 
-geom_survreg2 = function(formula = NULL, dist = "weibull", ..., conf.int = 0.95, failure = F, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
+geom_survreg2 = function(formula = NULL, dist = "weibull", ..., conf.int = 0.95, failure = FALSE, length.out = 1000, xmax = NULL, data = NULL, inherit.aes = T){
     extras = list2(...)
     structure(
         "",

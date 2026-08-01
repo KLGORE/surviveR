@@ -33,45 +33,67 @@
 #' \deqn{ \log[S(t)] = \exp(\beta) \log[S_0(t)] }
 #'
 #' Full details of this model are found in the foundational "Regression Models and Life-Tables" paper by D.R. Cox (1972).
-#' Note: Though this function accepts strata in its arguments, the CPH predictions are identical to that of the model in which the stratifying variable is a treatment instead.  The only difference specifying a strata makes is in the display of line type.
+#' Note: Though this function accepts strata in its arguments, the CPH predictions are identical to that of the model in which the stratifying variable is a treatment instead.  Specifying strata only impacts the line type.
 #'
 #' @export
 #' @import survival
-#' @import tidyverse
+#' @import broom
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import rlang
+#' @import utils
+#' @importFrom dplyr filter
+#' @importFrom stats as.formula
+#' @importFrom stats predict
+#' @importFrom stats qnorm
+#' @importFrom stats terms
+#' 
 #' @seealso
 #' Note: the [surviveR::geom_coxph2] function allows for an input of a survival formula rather than specifying elements through the aesthetics mapping. \cr
 #'
 #' @examples
+#'library(ggplot2); library(dplyr)
+#'
 #'# CoxPH survival plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+#'     geom_coxph(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# CoxPH failure plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T)
+#'     geom_coxph(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location), failure = TRUE)
 #'
 #'
 #'# CoxPH survival plot with treatment and strata variables
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'     geom_coxph(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'
 #'# Overlaying KM curve on CoxPH fit
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
-#'     geom_km(color = "black", conf.int = F) +
+#'     geom_coxph(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
+#'     geom_km(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 #'
-#'# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the formula and failure variables.
+#'# Note: By default, geom_km, geom_coxph, and geom_survreg 
+#'# inherit the formula and failure variables.
 #'
-
-geom_coxph = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
+#' 
+geom_coxph = function(mapping = NULL, ..., conf.int = 0.95, failure = FALSE, data = NULL, inherit.aes = TRUE){
     extras = list2(...)
     structure(
         "",
@@ -116,58 +138,80 @@ geom_coxph = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = 
 #'
 #' @export
 #' @import survival
-#' @import tidyverse
 #' @import broom
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import rlang
+#' @import utils
+#' @importFrom dplyr filter
 #'
 #' @examples
+#'library(ggplot2); library(dplyr)
+#'
 #'# CoxPH survival plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_coxph2(formula = Surv(ttf,status) ~ mfg_location, conf.int = 0.90)
+#'     geom_coxph2(
+#'         formula = Surv(ttf,status) ~ mfg_location, 
+#'         conf.int = 0.90)
 #'
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+#'#      geom_coxph(aes(time = ttf, time2 = status, 
+#'#           treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# CoxPH failure plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_coxph2(formula = Surv(ttf,status) ~ mfg_location, failure = T)
+#'     geom_coxph2(
+#'         formula = Surv(ttf,status) ~ mfg_location, 
+#'         failure = TRUE)
 #'
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_coxph2(formula = Surv(ttf,status) ~ mfg_location, failure = T)
+#'#      geom_coxph2(
+#'#           formula = Surv(ttf,status) ~ mfg_location, 
+#'#           failure = TRUE)
 #'
 #'
 #'# CoxPH survival plot with treatment and strata variables
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_coxph2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
+#'     geom_coxph2(formula = Surv(ttf, status) ~ 
+#'         device_type + strata(mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'# ^ equivalent to
 #'# mfg %>% 
 #'#      ggplot() +
-#'#      geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'#      geom_coxph(aes(time = ttf, time2 = status, 
+#'#          treatments = device_type, strata = mfg_location)) +
 #'#      facet_grid(.~mfg_location)
 #'
 #'
 #'# Overlaying KM curve on CoxPH fit
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_coxph2(formula = Surv(ttf,status) ~ device_type + strata(mfg_location)) +
-#'     geom_km2(color = "black", conf.int = F) +
+#'     geom_coxph2(formula = Surv(ttf,status) ~ 
+#'         device_type + strata(mfg_location)) +
+#'     geom_km2(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 #'
-#'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
+#'# Note: By default, geom_km2, geom_coxph2, and 
+#'# geom_survreg2 inherit the formula and failure variables.
 #'
 
 
 
-geom_coxph2 = function(formula = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
+geom_coxph2 = function(formula = NULL, ..., conf.int = 0.95, failure = FALSE, data = NULL, inherit.aes = TRUE){
     extras = list2(...)
     structure(
         "",

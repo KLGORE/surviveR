@@ -28,71 +28,90 @@
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
-#' @import tidyverse
 #' @import survival
+#' @import broom
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import utils
+#' @importFrom dplyr filter
 #'
 #'
 #' @seealso The alternate version that accepts survfit formulas: [surviveR::geom_km2] \cr
 #'  The survival function that this function is built on: [survival::survfit]
 #'
 #' @examples
+#'library(ggplot2); library(dplyr)
 #'
 #'# Univariate survival plot (no treatment or strata variables)
 #'mfg %>%
 #'     ggplot() +
-#'     geom_km(aes(time = ttf, time2 = status), conf.int = 0.90)
+#'     geom_km(aes(time = ttf, time2 = status), 
+#'         conf.int = 0.90)
 #'
 #'
 #'# Univariate failure plot (no treatment or strata variables)
 #'mfg %>%
 #'     ggplot() +
-#'     geom_km(aes(time = ttf, time2 = status), failure = T)
+#'     geom_km(aes(time = ttf, time2 = status), 
+#'         failure = TRUE)
 #'
 #'
 #'# Survival plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_km(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+#'     geom_km(aes(time = ttf, time2 = status, 
+#'         treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# Survival plot with treatment and strata variables
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_km(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'     geom_km(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'
 #'# Overriding color & removing confidence intervals (ideal for overlaying fits)
 #' mfg %>% 
 #'     ggplot() +
-#'     geom_km(aes(time = ttf, time2 = status, treatments = mfg_location),
-#'             conf.int = F, color="black")
+#'     geom_km(aes(time = ttf, time2 = status, 
+#'        treatments = mfg_location),
+#'        conf.int = FALSE, color="black")
 #'
 #'
 #'# Overlaying KM curve on semiparametric & parametric fits
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
-#'     geom_km(color = "black", conf.int = F) +
+#'     geom_coxph(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
+#'     geom_km(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 #'
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
-#'     geom_km(color = "black", conf.int = F) +
+#'     geom_survreg(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
+#'     geom_km(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 #'
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'     geom_survreg(aes(time = ttf, time2 = status, 
+#'         treatments = device_type, strata = mfg_location)) +
 #'     geom_coxph() +
-#'     geom_km(color = "black", conf.int = F) +
+#'     geom_km(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 #'
-#'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
+#'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 
+#'# inherit the formula and failure variables.
 #'
 
-geom_km = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
+geom_km = function(mapping = NULL, ..., conf.int = 0.95, failure = FALSE, data = NULL, inherit.aes = T){
     extras = list2(...)
     # Assigns all our data as attributes of a string so that we can access it later
     structure(
@@ -124,7 +143,7 @@ geom_km = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NUL
 #'
 #' Create a Kaplan-Meier Curve from provided formula
 #'
-#' For description of the functionality, see the main version [geom_km()]
+#' For description of the functionality, see the main version [surviveR::geom_km()]
 #'
 #' @param formula A formula compatible with survfit(), or a survfit object
 #' @param failure TRUE or FALSE (default). Values of TRUE will result in a failure curve being plotted, FALSE will result in a survival curve.
@@ -144,8 +163,20 @@ geom_km = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NUL
 #'
 #' @export
 #'
-#'
+#' @import survival
+#' @import broom
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import utils
+#' @importFrom dplyr filter
+#' 
 #' @examples
+#'library(ggplot2); library(dplyr)
 #'
 #'# Univariate survival plot (no treatment or strata variables)
 #'mfg %>%
@@ -155,75 +186,88 @@ geom_km = function(mapping = NULL, ..., conf.int = 0.95, failure = F, data = NUL
 #'# ^ equivalent to
 #'# mfg %>%
 #'#      ggplot() +
-#'#      geom_km(aes(time = ttf, time2 = status), conf.int = 0.90)
+#'#      geom_km(aes(time = ttf, time2 = status), 
+#'#           conf.int = 0.90)
 #'
 #'
 #'# Univariate failure plot (no treatment or strata variables)
 #'mfg %>%
 #'     ggplot() +
-#'     geom_km2(formula = Surv(ttf,status) ~ 1, failure = T)
+#'     geom_km2(
+#'         formula = Surv(ttf,status) ~ 1, 
+#'         failure = TRUE)
 #'
 #'# ^ equivalent to
 #'# mfg %>%
 #'#      ggplot() +
-#'#      geom_km(aes(time = ttf, time2 = status), failure = T)
+#'#      geom_km(aes(time = ttf, time2 = status), failure = TRUE)
 #'
 #'
 #'# Survival plot with treatment variable
 #'mfg %>% filter(device_type == "A") %>%
 #'     ggplot() +
-#'     geom_km2(formula = Surv(ttf,status) ~ mfg_location, conf.int = 0.90)
+#'     geom_km2(
+#'         formula = Surv(ttf,status) ~ mfg_location, 
+#'         conf.int = 0.90)
 #'
 #'# ^ equivalent to
 #'# mfg %>% filter(device_type == "A") %>%
 #'#      ggplot() +
-#'#      geom_km(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+#'#      geom_km(aes(time = ttf, time2 = status, 
+#'#           treatments = mfg_location), conf.int = 0.90)
 #'
 #'
 #'# Survival plot with treatment and strata variables
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_km2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
+#'     geom_km2(
+#'         formula = Surv(ttf, status) ~ device_type + 
+#'                   strata(mfg_location)) +
 #'     facet_grid(.~mfg_location)
 #'
 #'# ^ equivalent to
 #'# mfg %>% 
 #'#      ggplot() +
-#'#      geom_km(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#'#      geom_km(aes(time = ttf, time2 = status, 
+#'#           treatments = device_type, strata = mfg_location)) +
 #'#      facet_grid(.~mfg_location)
 #'
 #'
 #'# Overlaying KM curve on semiparametric & parametric fits
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_coxph2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
-#'     geom_km2(color = "black", conf.int = F) +
+#'     geom_coxph2(formula = Surv(ttf, status) ~ 
+#'                   device_type + strata(mfg_location)) +
+#'     geom_km2(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 #'
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
-#'     geom_km2(color = "black", conf.int = F) +
+#'     geom_survreg2(formula = Surv(ttf, status) ~ 
+#'         device_type + strata(mfg_location)) +
+#'     geom_km2(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 #'
 #'mfg %>% 
 #'     ggplot() +
-#'     geom_survreg2(formula = Surv(ttf, status) ~ device_type + strata(mfg_location)) +
+#'     geom_survreg2(formula = Surv(ttf, status) ~ 
+#'         device_type + strata(mfg_location)) +
 #'     geom_coxph2() +
-#'     geom_km2(color = "black", conf.int = F) +
+#'     geom_km2(color = "black", conf.int = FALSE) +
 #'     facet_grid(.~mfg_location)
 
-#'# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
+#'# Note: By default, geom_km2, geom_coxph2, and 
+#'# geom_survreg2 inherit the formula and failure variables.
 #'
 
 
-geom_km2 = function(formula = NULL, ..., conf.int = 0.95, failure = F, data = NULL, inherit.aes = T){
+geom_km2 = function(formula = NULL, ..., conf.int = 0.95, failure = FALSE, data = NULL, inherit.aes = T){
     extras = list2(...)
     #Check if they piped in
     if (!is.null(formula)){
-        if (class(formula) != "formula"){
-            if (rlang:::quo_get_expr(enquo(formula)) == "."){
-                if (tryCatch(length(unlist(rlang:::eval_tidy(enquo(formula)))) > 1, error = function(e){FALSE})){
+        if (!inherits(formula, "formula")){
+            if (rlang::quo_get_expr(enquo(formula)) == "."){
+                if (tryCatch(length(unlist(rlang::eval_tidy(enquo(formula)))) > 1, error = function(e){FALSE})){
                     stop("piped in to geom_km2 instead of using +")
                 } else{
                     stop("Invalid input for formula argument")
@@ -297,7 +341,7 @@ add_km_layers = function(args, plot){
             )
 
         rm(conf.low); rm(conf.high)
-
+        
         conf_ds = conf_ds %>% arrange(prob)
     }
 

@@ -1,7 +1,7 @@
 #' @importFrom ggplot2 ggplot_add
 #' @export
 #' 
-ggplot_add.surviveR_plot = function(object, plot, object_name){
+ggplot_add.surviveR_plot = function(object, plot, object_name, ...){
     args = attributes(object)
     args$fn(args, plot)
 }
@@ -9,7 +9,7 @@ ggplot_add.surviveR_plot = function(object, plot, object_name){
 
 #' @importFrom ggplot2 ggplot_add
 #' @export
-print.surviveR_plot = function(x){
+print.surviveR_plot = function(x, ...){
     attributes(x)
     rlang::inform(paste("This object must be added to a ggplot object"))
 }
@@ -225,6 +225,11 @@ wrangle_global_args=function(args){   # wrangle non-aes args
     args
 }
 
+#' @importFrom stats as.formula
+#' @importFrom stats predict
+#' @importFrom stats qnorm
+#' @importFrom stats terms
+#' @importFrom vctrs vec_equal
 
 km.survreg.coxph_wrangle_args = function(args, plot){
     # convert args to a basic list to prevent the error regarding mixed quosure/non quosure lists
@@ -339,6 +344,10 @@ km.survreg.coxph_wrangle_args = function(args, plot){
 #               and then creates a formula string
 # ------------------------------------------------------------------------------
 
+#' @importFrom stats as.formula
+#' @importFrom stats predict
+#' @importFrom stats qnorm
+#' @importFrom stats terms
 
 km.survreg.coxph_create_formula=function(args){
 
