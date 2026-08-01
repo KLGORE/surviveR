@@ -4,7 +4,13 @@
 \alias{geom_weibull}
 \title{Create a Weibull Plot}
 \usage{
-geom_weibull(mapping = NULL, ..., line.fit = T, data = NULL, inherit.aes = T)
+geom_weibull(
+  mapping = NULL,
+  ...,
+  line.fit = TRUE,
+  data = NULL,
+  inherit.aes = TRUE
+)
 }
 \arguments{
 \item{mapping}{Aesthetics mapping with the following inputs: \cr
@@ -16,6 +22,8 @@ geom_weibull(mapping = NULL, ..., line.fit = T, data = NULL, inherit.aes = T)
 }}
 
 \item{...}{Other graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc) \cr}
+
+\item{line.fit}{TRUE or FALSE.  Indicates whether a line should be plotted for each subgroup.  Default = TRUE.}
 
 \item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
 
@@ -53,6 +61,8 @@ treatment variable.  It assigns data point characters
 according to the strata variable.
 }
 \examples{
+library(ggplot2); library(dplyr)
+
 # Univariate Weibull plot (no treatment or strata variables)
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
@@ -62,18 +72,21 @@ mfg \%>\% filter(device_type == "A") \%>\%
 # Weibull plot with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location))
+    geom_weibull(aes(time = ttf, time2 = status, 
+        treatments = mfg_location))
 
 
 # Weibull plot with no line fit
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_weibull(aes(time = ttf, time2 = status, treatments = mfg_location), line.fit = F)
+    geom_weibull(aes(time = ttf, time2 = status, 
+        treatments = mfg_location), line.fit = FALSE)
 
 
 # Weibull plot with treatment and strata variables
 mfg \%>\% ggplot() +
-    geom_weibull(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+    geom_weibull(aes(time = ttf, time2 = status, 
+        treatments = device_type, strata = mfg_location)) +
     facet_grid(.~mfg_location, scale = "free_x")
 
 }

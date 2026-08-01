@@ -8,9 +8,9 @@ geom_coxph(
   mapping = NULL,
   ...,
   conf.int = 0.95,
-  failure = F,
+  failure = FALSE,
   data = NULL,
-  inherit.aes = T
+  inherit.aes = TRUE
 )
 }
 \arguments{
@@ -62,36 +62,44 @@ upon estimation of the model coefficients, the above formula can be reexpressed 
 \deqn{ \log[S(t)] = \exp(\beta) \log[S_0(t)] }
 
 Full details of this model are found in the foundational "Regression Models and Life-Tables" paper by D.R. Cox (1972).
-Note: Though this function accepts strata in its arguments, the CPH predictions are identical to that of the model in which the stratifying variable is a treatment instead.  The only difference specifying a strata makes is in the display of line type.
+Note: Though this function accepts strata in its arguments, the CPH predictions are identical to that of the model in which the stratifying variable is a treatment instead.  Specifying strata only impacts the line type.
 }
 \examples{
+library(ggplot2); library(dplyr)
+
 # CoxPH survival plot with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+    geom_coxph(aes(time = ttf, time2 = status, 
+        treatments = mfg_location), conf.int = 0.90)
 
 
 # CoxPH failure plot with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_coxph(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T)
+    geom_coxph(aes(time = ttf, time2 = status, 
+        treatments = mfg_location), failure = TRUE)
 
 
 # CoxPH survival plot with treatment and strata variables
 mfg \%>\% 
     ggplot() +
-    geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+    geom_coxph(aes(time = ttf, time2 = status, 
+        treatments = device_type, strata = mfg_location)) +
     facet_grid(.~mfg_location)
 
 
 # Overlaying KM curve on CoxPH fit
 mfg \%>\% 
     ggplot() +
-    geom_coxph(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
-    geom_km(color = "black", conf.int = F) +
+    geom_coxph(aes(time = ttf, time2 = status, 
+        treatments = device_type, strata = mfg_location)) +
+    geom_km(color = "black", conf.int = FALSE) +
     facet_grid(.~mfg_location)
 
-# Note: By default, geom_km, geom_coxph, and geom_survreg inherit the formula and failure variables.
+# Note: By default, geom_km, geom_coxph, and geom_survreg 
+# inherit the formula and failure variables.
+
 
 }
 \seealso{

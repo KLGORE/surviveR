@@ -9,7 +9,7 @@ geom_survreg2(
   dist = "weibull",
   ...,
   conf.int = 0.95,
-  failure = F,
+  failure = FALSE,
   length.out = 1000,
   xmax = NULL,
   data = NULL,
@@ -56,63 +56,82 @@ Create a parametric survival plot using formula-based arguments
 }
 \details{
 This function allows users to visualize parametric survival fits using
-the ggplot Grammar of Graphics.  It leverages the flexsurvreg function in the \link[flexsurv:flexsurv-package]{flexsurv::flexsurv-package}
-package.  For more information on the distributions supported by geom_survreg and
-geom_survreg2, please see the documentation for \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}.  Note that
-flexsurvreg (and, by extension, geom_survreg2) may run sluggishly with large datasets.
+the ggplot Grammar of Graphics.  It leverages the flexsurvreg function in
+the \link[flexsurv:flexsurv-package]{flexsurv::flexsurv-package} package.
+
+For more information on the distributions supported by geom_survreg and
+geom_survreg2, please see the documentation for \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}.
+
+Note that flexsurvreg (and, by extension, geom_survreg2) may run sluggishly
+with large datasets.
 }
 \examples{
+library(ggplot2); library(dplyr)
+
 # Parametric survival plot with treatment variable (default: Weibull distribution)
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, conf.int = 0.90)
+    geom_survreg2(
+        formula = Surv(ttf,status) ~ mfg_location, 
+        conf.int = 0.90)
 
 # ^ equivalent to
 # mfg \%>\% filter(device_type == "A") \%>\%
 #      ggplot() +
-#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), conf.int = 0.90)
+#      geom_survreg(aes(time = ttf, time2 = status, 
+#           treatments = mfg_location), conf.int = 0.90)
 
 
 # Lognormal survival fit with treatment variable
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, dist = "lognormal")
+    geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, 
+        dist = "lognormal")
 
 # ^ equivalent to
 # mfg \%>\% filter(device_type == "A") \%>\%
 #      ggplot() +
-#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), dist = "lognormal")
+#      geom_survreg(aes(time = ttf, time2 = status, 
+#           treatments = mfg_location), dist = "lognormal")
 
 
 # Parametric failure plot with treatment variable and 90\% confidence interval
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg2(formula = Surv(ttf,status) ~ mfg_location, failure = T, conf.int = 0.90)
+    geom_survreg2(
+        formula = Surv(ttf,status) ~ mfg_location, 
+        failure = TRUE, conf.int = 0.90)
 
 # ^ equivalent to
 # mfg \%>\% filter(device_type == "A") \%>\%
 #      ggplot() +
-#      geom_survreg(aes(time = ttf, time2 = status, treatments = mfg_location), failure = T, conf.int = 0.90)
+#      geom_survreg(aes(time = ttf, time2 = status, 
+#           treatments = mfg_location), 
+#           failure = TRUE, conf.int = 0.90)
 
 
 # Weibull fit with treatment and strata variables
 mfg \%>\% 
     ggplot() +
-    geom_survreg2(formula = Surv(ttf,status) ~ treatments + strata(mfg_location))
+    geom_survreg2(
+        formula = Surv(ttf,status) ~ device_type + strata(mfg_location)
+    ) +
     facet_grid(.~mfg_location)
 
 # ^ equivalent to
 # mfg \%>\% 
-      ggplot() +
-#      geom_survreg(aes(time = ttf, time2 = status, treatments = device_type, strata = mfg_location)) +
+#      ggplot() +
+#      geom_survreg(aes(time = ttf, time2 = status, 
+#           treatments = device_type, strata = mfg_location)) +
 #      facet_grid(.~mfg_location)
 
 
 # Overlaying KM curve on top of parametric fit
 mfg \%>\% filter(device_type == "A") \%>\%
     ggplot() +
-    geom_survreg2(formula = Surv(ttf,status) ~ mfg_location)) +
-    geom_km2(conf.int = F)
+    geom_survreg2(formula = Surv(ttf,status) ~ mfg_location) +
+    geom_km2(conf.int = FALSE)
 
-# Note: By default, geom_km2, geom_coxph2, and geom_survreg2 inherit the formula and failure variables.
+# Note: By default, geom_km2, geom_coxph2, and 
+# geom_survreg2 inherit the formula and failure variables.
 }
