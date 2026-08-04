@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom_km.R
 \name{geom_km}
 \alias{geom_km}
-\title{Create a Kaplan-Meier Curve}
+\title{Create a Kaplan-Meier Curve Using the Tidyverse Grammar-of-Graphics}
 \usage{
 geom_km(
   mapping = NULL,
@@ -22,7 +22,7 @@ geom_km(
 \item strata: optional column or vector corresponding to the stratifying variable.   \cr
 }}
 
-\item{...}{Other non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
+\item{...}{Non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
@@ -31,31 +31,38 @@ geom_km(
 \item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
 
 \item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
+}
+\description{
+Create Kaplan-Meier curve using aesthetic mapping arguments
+}
+\details{
+The \code{geom_km} function generates KM curves that display nonparametric
+survival estimates S(t) versus time (t).  Users may plot cumulative failure curves
+in lieu of the survival probability by using the \code{failure=TRUE} argument.  For more
+statistical details on the Kaplan-Meier methodology, please see chapter 3 of
+\emph{Statistical Methods for Reliability Data (2nd edition)} by Meeker, Escobar,
+and Pascual.
 
-\item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
+\bold{Note on additional non-aesthetics arguments:} \cr
+Users may customize graphical attributes of the primary KM curve(s)
+and confidence intervals.  Options include the following:
+\itemize{
+\item KM Curve(s): color, linewidth, linetype, alpha \cr
+\item Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+\itemize{
+\item \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+\item \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be
+color-coded by treatment. Other accepted values include the following:
 \itemize{
 \item String of color name (ex: "black")
 \item TRUE indicates the color-coding fill color by treatment.
 \item Values of FALSE, NA, and "transparent" may be used to omit shading.
-}}
-
-\item{conf.linetype}{Line type of confidence interval lines ("dotted", "dashed", "solid", etc).}
-
-\item{conf.linewidth}{Line width of confidence interval lines.}
-
-\item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
-
-\item{conf.alpha}{The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.}
 }
-\description{
-Create a Kaplan-Meier Curve from provided data
+\item \emph{conf.linewidth}: Line width of confidence interval lines.
+\item \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+\item \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
 }
-\details{
-This function uses the survfit function in the survival package to generate a
-Kaplan-Meier (KM) curve for the given data. Kaplan-Meier curves are a non-parametric
-statistic used to estimate the survival function from data. To learn more about the
-specifics, see the foundational paper "Nonparametric Estimation from Incomplete Observations" by
-E. L. Kaplan and Paul Meier.
+}
 }
 \examples{
 library(ggplot2); library(dplyr)
@@ -125,6 +132,6 @@ mfg \%>\%
 
 }
 \seealso{
-The alternate version that accepts survfit formulas: \link{geom_km2} \cr
-The survival function that this function is built on: \link[survival:survfit]{survival::survfit}
+The \link{geom_km2}, which accepts a survival formula in lieu of variable
+specification using aesthetics mappings. \cr
 }

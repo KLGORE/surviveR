@@ -1,16 +1,32 @@
 #' Create a Weibull Plot
 #'
-#' Create a Weibull plot using non-parametric survival probabilities
+#' @description
+#' Create a Weibull Plot Using the Tidyverse Grammar-of-Graphics
+#' 
 #'
-#' This function utilizes the [survival::survfit] function to generate a
-#' Weibull plot for the provided survival data.  As discussed in CH6 of Statistical Methods
-#' for Reliability Data by Meeker, Escobar, and Pascual (2022),
-#' data that is well-modeled by the Weibull distribution should yield a linear
-#' log(-log(S(t)) vs. log(t) relationship.
+#' The `geom_weibull` function utilizes [survival::survfit] to generate a
+#' Weibull plot for the provided survival data.  As discussed in chapter 6 of 
+#' \emph{Statistical Methods for Reliability Data (2nd edition)} by Meeker, Escobar, 
+#' and Pascual (2022), data that is well-modeled by the Weibull distribution should yield a linear
+#' log(-log(S(t)) vs. log(t) relationship, where \eqn{t} represents time and 
+#' \eqn{S(t)} represents the nonparametric survival probability estimate.
 #'
 #' The [surviveR::geom_weibull] function color-codes data points by the
 #' treatment variable.  It assigns data point characters
 #' according to the strata variable.
+#'
+#' \bold{Note on additional non-aesthetics arguments:} \cr
+#' Users may customize graphical attributes of the data points 
+#' and corresponding line fit(s).  Options include the following:
+#' 
+#'    * Weibull Points: color, size, alpha \cr
+#'      
+#'    * Line fit: line.color, linewidth, linetype, line.alpha  \cr
+#'        * \emph{line.color}: Color of  fit line(s). Must be a string.
+#'        * \emph{linewidth}: Line width of fit line(s).
+#'        * \emph{linetype}: Line type of the fit line(s) ("dotted", "dashed", "solid", etc).
+#'        * \emph{line.alpha}: Opacity of fit line(s).  0 = transparent.  1 = fully opaque.
+#'
 #'
 #' @param mapping Aesthetics mapping with the following inputs: \cr
 #'    * time: time column \cr
@@ -18,15 +34,6 @@
 #'    * treatments: optional column or vector corresponding to the treatment variable.  Aliased arguments include treatment, trt, and trts \cr
 #'    * strata: optional column or vector corresponding to the stratifying variable  \cr
 #' @param ... Other graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc) \cr
-#' @param conf.int Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.
-#' @param conf.fill Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-#'    * String of color name (ex: "black") \cr
-#'    * TRUE indicates the color-coding fill color by treatment. \cr
-#'    * Values of FALSE, NA, and "transparent" may be used to omit shading. \cr
-#' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
-#' @param conf.linewidth Line width of confidence interval lines.
-#' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.
 #' @param line.fit TRUE or FALSE.  Indicates whether a line should be plotted for each subgroup.  Default = TRUE.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.

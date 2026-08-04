@@ -28,37 +28,34 @@ geom_weibull(
 \item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
 
 \item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
-
-\item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
-
-\item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-\itemize{
-\item String of color name (ex: "black") \cr
-\item TRUE indicates the color-coding fill color by treatment. \cr
-\item Values of FALSE, NA, and "transparent" may be used to omit shading. \cr
-}}
-
-\item{conf.linetype}{Line type of confidence interval lines ("dotted", "dashed", "solid", etc).}
-
-\item{conf.linewidth}{Line width of confidence interval lines.}
-
-\item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
-
-\item{conf.alpha}{The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.}
 }
 \description{
-Create a Weibull plot using non-parametric survival probabilities
-}
-\details{
-This function utilizes the \link[survival:survfit]{survival::survfit} function to generate a
-Weibull plot for the provided survival data.  As discussed in CH6 of Statistical Methods
-for Reliability Data by Meeker, Escobar, and Pascual (2022),
-data that is well-modeled by the Weibull distribution should yield a linear
-log(-log(S(t)) vs. log(t) relationship.
+Create a Weibull Plot Using the Tidyverse Grammar-of-Graphics
+
+The \code{geom_weibull} function utilizes \link[survival:survfit]{survival::survfit} to generate a
+Weibull plot for the provided survival data.  As discussed in chapter 6 of
+\emph{Statistical Methods for Reliability Data (2nd edition)} by Meeker, Escobar,
+and Pascual (2022), data that is well-modeled by the Weibull distribution should yield a linear
+log(-log(S(t)) vs. log(t) relationship, where \eqn{t} represents time and
+\eqn{S(t)} represents the nonparametric survival probability estimate.
 
 The \link{geom_weibull} function color-codes data points by the
 treatment variable.  It assigns data point characters
 according to the strata variable.
+
+\bold{Note on additional non-aesthetics arguments:} \cr
+Users may customize graphical attributes of the data points
+and corresponding line fit(s).  Options include the following:
+\itemize{
+\item Weibull Points: color, size, alpha \cr
+\item Line fit: line.color, linewidth, linetype, line.alpha  \cr
+\itemize{
+\item \emph{line.color}: Color of  fit line(s). Must be a string.
+\item \emph{linewidth}: Line width of fit line(s).
+\item \emph{linetype}: Line type of the fit line(s) ("dotted", "dashed", "solid", etc).
+\item \emph{line.alpha}: Opacity of fit line(s).  0 = transparent.  1 = fully opaque.
+}
+}
 }
 \examples{
 library(ggplot2); library(dplyr)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom_survreg.R
 \name{geom_survreg2}
 \alias{geom_survreg2}
-\title{Create a parametric survival plot}
+\title{Create a Parametric Survival Curve Using the Tidyverse Grammar-of-Graphics}
 \usage{
 geom_survreg2(
   formula = NULL,
@@ -22,7 +22,7 @@ geom_survreg2(
 \item{dist}{Distribution to be used in parametric survival fit.  Default value: "weibull".  Accepts all distributions accepted by \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}, including
 "genf","genf.orig" ,"gengamma", "gengamma.orig", "exp", "weibull", "weibullPH", "lnorm", "gamma", "gompertz", "llogis", "exponential", and "lognormal".  For a list of distributions supported by this function, please reference the documentation for \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}.}
 
-\item{...}{Other graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
+\item{...}{Non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
@@ -35,24 +35,9 @@ geom_survreg2(
 \item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
 
 \item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
-
-\item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-\itemize{
-\item String of color name (ex: "black")
-\item TRUE indicates the color-coding fill color by treatment.
-\item Values of FALSE, NA, and "transparent" may be used to omit shading.
-}}
-
-\item{conf.linetype}{Line type of confidence interval lines ("dotted", "dashed", "solid", etc).}
-
-\item{conf.linewidth}{Line width of confidence interval lines.}
-
-\item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
-
-\item{conf.alpha}{The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.}
 }
 \description{
-Create a parametric survival plot using formula-based arguments
+Create a parametric survival curve by providing a survival formula
 }
 \details{
 This function allows users to visualize parametric survival fits using
@@ -64,6 +49,27 @@ geom_survreg2, please see the documentation for \link[flexsurv:flexsurvreg]{flex
 
 Note that flexsurvreg (and, by extension, geom_survreg2) may run sluggishly
 with large datasets.
+
+\bold{Note on additional non-aesthetics arguments:} \cr
+Users may customize graphical attributes of the primary parametric curve(s)
+and confidence intervals.  Options include the following:
+\itemize{
+\item Parametric Curve(s): color, linewidth, linetype, alpha \cr
+\item Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+\itemize{
+\item \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+\item \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be
+color-coded by treatment. Other accepted values include the following:
+\itemize{
+\item String of color name (ex: "black")
+\item TRUE indicates the color-coding fill color by treatment.
+\item Values of FALSE, NA, and "transparent" may be used to omit shading.
+}
+\item \emph{conf.linewidth}: Line width of confidence interval lines.
+\item \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+\item \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
+}
+}
 }
 \examples{
 library(ggplot2); library(dplyr)
@@ -134,4 +140,7 @@ mfg \%>\% filter(device_type == "A") \%>\%
 
 # Note: By default, geom_km2, geom_coxph2, and 
 # geom_survreg2 inherit the formula and failure variables.
+}
+\seealso{
+\link{geom_survreg} \cr
 }

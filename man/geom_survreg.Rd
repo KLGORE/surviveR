@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom_survreg.R
 \name{geom_survreg}
 \alias{geom_survreg}
-\title{Create a parametric survival plot}
+\title{Create a Parametric Survival Curve Using the Tidyverse Grammar-of-Graphics}
 \usage{
 geom_survreg(
   mapping = NULL,
@@ -25,10 +25,11 @@ geom_survreg(
 \item strata: optional column or vector corresponding to the stratifying variable.   \cr
 }}
 
-\item{dist}{Distribution to be used in parametric survival fit.  Default value: "weibull".  Accepts all distributions accepted by \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}, including
+\item{dist}{Distribution to be used in parametric survival fit.  Default value: "weibull".
+Accepts all distributions accepted by \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}, including
 "genf","genf.orig" ,"gengamma", "gengamma.orig", "exp", "weibull", "weibullPH", "lnorm", "gamma", "gompertz", "llogis", "exponential", and "lognormal".  For a list of distributions supported by this function, please reference the documentation for \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}.}
 
-\item{...}{Non-aes arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
+\item{...}{Non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
@@ -41,34 +42,39 @@ geom_survreg(
 \item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
 
 \item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
+}
+\description{
+Create a parametric survival curve using aesthetic mapping arguments
+}
+\details{
+The \code{geom_survreg} function generates parametric survival curves for survival S(t) versus time (t).
+It leverages the flexsurvreg function in the \link[flexsurv:flexsurv-package]{flexsurv::flexsurv-package} package.  For more information on the
+distributions supported by geom_survreg and geom_survreg2, please see the
+documentation for \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}.
 
-\item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
+Note that \code{geom_survreg} (and, by extension, \code{geom_survreg2}) may run sluggishly
+with large datasets.
+
+\bold{Note on additional non-aesthetics arguments:} \cr
+Users may customize graphical attributes of the primary parametric curve(s)
+and confidence intervals.  Options include the following:
+\itemize{
+\item Parametric Curve(s): color, linewidth, linetype, alpha \cr
+\item Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+\itemize{
+\item \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+\item \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be
+color-coded by treatment. Other accepted values include the following:
 \itemize{
 \item String of color name (ex: "black")
 \item TRUE indicates the color-coding fill color by treatment.
 \item Values of FALSE, NA, and "transparent" may be used to omit shading.
-}}
-
-\item{conf.linetype}{Line type of confidence interval lines ("dotted", "dashed", "solid", etc).}
-
-\item{conf.linewidth}{Line width of confidence interval lines.}
-
-\item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
-
-\item{conf.alpha}{Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.}
 }
-\description{
-Create a parametric survival plot using aesthetic mapping arguments
+\item \emph{conf.linewidth}: Line width of confidence interval lines.
+\item \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+\item \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
 }
-\details{
-This function allows users to visualize parametric survival fits using
-the ggplot Grammar of Graphics.  It leverages the flexsurvreg function in the
-\link[flexsurv:flexsurv-package]{flexsurv::flexsurv-package} package.  For more information on the
-distributions supported by geom_survreg and geom_survreg2, please see the
-documentation for \link[flexsurv:flexsurvreg]{flexsurv::flexsurvreg}.
-
-Note that flexsurvreg (and, by extension, geom_survreg2) may run sluggishly
-with large datasets.
+}
 }
 \examples{
 library(ggplot2); library(dplyr)
@@ -114,5 +120,6 @@ mfg \%>\% filter(device_type == "A") \%>\%
 # geom_survreg inherit the mapping (time, time2, treatments, strata) and failure variables.
 }
 \seealso{
-The alternate version that accepts formulas: \link{geom_survreg2} \cr
+\link{geom_survreg2}, which accepts a survival formula in lieu of variable
+specification using aesthetics mappings. \cr
 }

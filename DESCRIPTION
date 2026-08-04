@@ -26,6 +26,7 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE, roclets = c("collate", "namespace", "rd"))
 Imports: 
     ggplot2,
+    tibble,
     survival,
     flexsurv,
     broom,
@@ -44,3 +45,4 @@ Suggests:
     knitr,
     rmarkdown,
     systemfonts
+Config/testthat/edition: 3

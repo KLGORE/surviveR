@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom_mcf.R
 \name{geom_mcf}
 \alias{geom_mcf}
-\title{Create Mean Cumulative Function}
+\title{Create Mean Cumulative Function Using the Tidyverse Grammar-of-Graphics}
 \usage{
 geom_mcf(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.aes = TRUE)
 }
@@ -15,31 +15,17 @@ geom_mcf(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.aes = TRUE)
 \item strata: Grouping variable, typically used for faceting.
 }}
 
-\item{...}{Other arguments pertaining to the MCF curves. Examples include, color, linetype, linewidth, etc.}
+\item{...}{Non-aes graphical arguments pertaining to the MCF line (color, linetype, linewidth, etc).}
 
-\item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
+\item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL,
+or NA will result in no confidence intervals being plotted.}
 
 \item{data}{The data to use, if not provided in the ggplot call.}
 
 \item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
-
-\item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-\itemize{
-\item String of color name (ex: "black")
-\item TRUE indicates the color-coding fill color by treatment.
-\item Values of FALSE, NA, and "transparent" may be used to omit shading.
-}}
-
-\item{conf.linetype}{Line type of confidence interval lines ("dotted", "dashed", "solid", etc).}
-
-\item{conf.linewidth}{Line width of the confidence interval lines.}
-
-\item{conf.color}{The line color of confidence interval lines. Value provided must be a string.}
-
-\item{conf.alpha}{The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.}
 }
 \description{
-This function creates a Mean Cumulative Function (MCF) plot from the provided data.
+Create MCF curve(s) using aesthetic mapping arguments
 }
 \details{
 The mean cumulative function (MCF) is a nonparametric survival statistic used to model the average number of events for a repairable
@@ -70,9 +56,30 @@ The nonparametric standard deviation for the MCF at time \eqn{t_k} is estimated 
 Note: The statistical validity (read: bias) of the above MCF statistics hinges on a fairly strong assumption: the recurrence rate of the events
 is constant for all units.  This assumption can be violated in common scenarios, so one must check diagnostics to verify the appropriateness of the metric.
 
-Many of the details and notation of this page were heavily adapted from "Statistical Methods
-for Reliability Data: Second Edition" (2022) by William Q. Meeker, Luis A. Escobar, and Francis G. Pascual.
+Many of the details and notation of this page were heavily adapted from \emph{Statistical Methods
+for Reliability Data (2nd edition)} by Meeker, Escobar, and Pascual.
 For more statistical details on the MCF methodology, please reference pages 45-47 and 522-528 of this fantastic book.
+
+\bold{Note on additional non-aesthetics arguments:} \cr
+Users may customize graphical attributes of the primary MCF curve(s)
+and confidence intervals.  Options include the following:
+\itemize{
+\item MCF Curve(s): color, linewidth, linetype, alpha \cr
+\item Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+\itemize{
+\item \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+\item \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be
+color-coded by treatment. Other accepted values include the following:
+\itemize{
+\item String of color name (ex: "black")
+\item TRUE indicates the color-coding fill color by treatment.
+\item Values of FALSE, NA, and "transparent" may be used to omit shading.
+}
+\item \emph{conf.linewidth}: Line width of confidence interval lines.
+\item \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+\item \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
+}
+}
 }
 \examples{
 library(ggplot2); library(dplyr)

@@ -16,7 +16,7 @@ geom_coxph2(
 \arguments{
 \item{formula}{A formula of the form you would input into \link[survival:coxph]{survival::coxph}}
 
-\item{...}{Other non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
+\item{...}{Non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).}
 
 \item{conf.int}{Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.}
 
@@ -25,27 +25,44 @@ geom_coxph2(
 \item{data}{The reference dataset. May be inherited from the plot data or a previous surviveR layer data.}
 
 \item{inherit.aes}{TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.}
-
-\item{conf.fill}{Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-\itemize{
-\item String of color name (ex: "black")
-\item TRUE indicates the color-coding fill color by treatment.
-\item Values of FALSE, NA, and "transparent" may be used to omit shading.
-}}
-
-\item{conf.linetype}{Line type of confidence interval lines ("dotted", "dashed", "solid", etc).}
-
-\item{conf.linewidth}{Line width of confidence interval lines.}
-
-\item{conf.color}{Color of confidence interval lines. Value provided must be a string.}
-
-\item{conf.alpha}{The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.}
 }
 \description{
 Utilizes tidyverse syntax to visualize Cox proportional hazards predictions.
 }
 \details{
-For description of the functionality, see the main version \link{geom_coxph}
+The Cox proportional hazards regression model is a versatile semiparametric method
+commonly used to model survival data.  It applies to cases in which hazards can be modeled as follows:
+
+\deqn{ h(t) = h_0(t) \exp (b_1 x_1 + b_2 x_2 + \ldots )}
+
+Upon estimation of the model coefficients, the above formula can be reexpressed in terms of the survival probability.  This expression is given by
+
+\deqn{ S(t) = S_0(t)^{\exp(\beta)} }
+\deqn{ \log[S(t)] = \exp(\beta) \log[S_0(t)] }
+
+Full details of this model are found in the "Regression Models and Life-Tables" paper by D.R. Cox (1972).
+Note: Though this function accepts strata in its arguments, the CPH predictions are identical to that of the model in which the stratifying variable is a treatment instead.  Specifying strata only impacts the line type.
+
+\bold{Note on additional non-aesthetics arguments:} \cr
+Users may customize graphical attributes of the primary CoxPH curve(s)
+and confidence intervals.  Options include the following:
+\itemize{
+\item CoxPH Curve(s): color, linewidth, linetype, alpha \cr
+\item Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+\itemize{
+\item \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+\item \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be
+color-coded by treatment. Other accepted values include the following:
+\itemize{
+\item String of color name (ex: "black")
+\item TRUE indicates the color-coding fill color by treatment.
+\item Values of FALSE, NA, and "transparent" may be used to omit shading.
+}
+\item \emph{conf.linewidth}: Line width of confidence interval lines.
+\item \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+\item \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
+}
+}
 }
 \examples{
 library(ggplot2); library(dplyr)
@@ -105,4 +122,7 @@ mfg \%>\%
 # Note: By default, geom_km2, geom_coxph2, and 
 # geom_survreg2 inherit the formula and failure variables.
 
+}
+\seealso{
+\link{geom_coxph} \cr
 }

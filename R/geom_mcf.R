@@ -1,43 +1,6 @@
-#' Create Mean Cumulative Function
+#' Create Mean Cumulative Function Using the Tidyverse Grammar-of-Graphics
 #'
-#' This function creates a Mean Cumulative Function (MCF) plot from the provided data.
-#'
-#' @param mapping Aesthetics mapping with the following inputs:
-#'     * time: Event times (must be numeric). 
-#'     * ids: Unit ID column. Alias arguments include id, Id, Ids, ID, IDS. 
-#'     * treatments: A single treatment or a vector of treatments. Alias arguments include treatment, trt, or trts.
-#'     * strata: Grouping variable, typically used for faceting. 
-#' @param ... Other arguments pertaining to the MCF curves. Examples include, color, linetype, linewidth, etc. 
-#' @param conf.int Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.
-#' @param conf.fill Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-#' * String of color name (ex: "black")
-#' * TRUE indicates the color-coding fill color by treatment.
-#' * Values of FALSE, NA, and "transparent" may be used to omit shading.
-#' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
-#' @param conf.linewidth Line width of the confidence interval lines. 
-#' @param conf.color The line color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.
-#' @param data The data to use, if not provided in the ggplot call. 
-#' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
-#'
-#'
-#' @export
-#' @import survival
-#' @import broom
-#' @import dplyr
-#' @import ggplot2
-#' @import rlang
-#' @import stringr
-#' @import tidyr
-#' @import scales
-#' @import forcats
-#' @import utils
-#' @importFrom dplyr filter
-#' @importFrom dplyr lag
-#' @importFrom stats as.formula
-#' @importFrom stats predict
-#' @importFrom stats qnorm
-#' @importFrom stats terms
+#' @description Create MCF curve(s) using aesthetic mapping arguments
 #'
 #' @details
 #' The mean cumulative function (MCF) is a nonparametric survival statistic used to model the average number of events for a repairable 
@@ -66,10 +29,58 @@
 #' Note: The statistical validity (read: bias) of the above MCF statistics hinges on a fairly strong assumption: the recurrence rate of the events
 #' is constant for all units.  This assumption can be violated in common scenarios, so one must check diagnostics to verify the appropriateness of the metric.
 #' 
-#' Many of the details and notation of this page were heavily adapted from "Statistical Methods
-#' for Reliability Data: Second Edition" (2022) by William Q. Meeker, Luis A. Escobar, and Francis G. Pascual.  
+#' Many of the details and notation of this page were heavily adapted from \emph{Statistical Methods
+#' for Reliability Data (2nd edition)} by Meeker, Escobar, and Pascual.  
 #' For more statistical details on the MCF methodology, please reference pages 45-47 and 522-528 of this fantastic book.
 #' 
+#' \bold{Note on additional non-aesthetics arguments:} \cr
+#' Users may customize graphical attributes of the primary MCF curve(s) 
+#' and confidence intervals.  Options include the following:
+#' 
+#'    * MCF Curve(s): color, linewidth, linetype, alpha \cr
+#'      
+#'    * Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+#'        * \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+#'        * \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be 
+#'              color-coded by treatment. Other accepted values include the following:
+#'            * String of color name (ex: "black")
+#'            * TRUE indicates the color-coding fill color by treatment.
+#'            * Values of FALSE, NA, and "transparent" may be used to omit shading.
+#'        * \emph{conf.linewidth}: Line width of confidence interval lines.
+#'        * \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+#'        * \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
+#'        
+#'        
+#' @param mapping Aesthetics mapping with the following inputs:
+#'     * time: Event times (must be numeric). 
+#'     * ids: Unit ID column. Alias arguments include id, Id, Ids, ID, IDS. 
+#'     * treatments: A single treatment or a vector of treatments. Alias arguments include treatment, trt, or trts.
+#'     * strata: Grouping variable, typically used for faceting. 
+#' @param ... Non-aes graphical arguments pertaining to the MCF line (color, linetype, linewidth, etc).
+#' @param conf.int Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, 
+#' or NA will result in no confidence intervals being plotted.
+#' @param data The data to use, if not provided in the ggplot call. 
+#' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
+#'
+#'
+#' @export
+#' @import survival
+#' @import broom
+#' @import dplyr
+#' @import ggplot2
+#' @import rlang
+#' @import stringr
+#' @import tidyr
+#' @import scales
+#' @import forcats
+#' @import utils
+#' @importFrom dplyr filter
+#' @importFrom dplyr lag
+#' @importFrom stats as.formula
+#' @importFrom stats predict
+#' @importFrom stats qnorm
+#' @importFrom stats terms
+#'
 #' 
 #' @examples
 #'library(ggplot2); library(dplyr)
@@ -120,17 +131,7 @@ geom_mcf = function(mapping = NULL, ..., conf.int = 0.95, data = NULL, inherit.a
         fn = create_mcf_plot,
         mapping = mapping,
         extras = enquos(...),
-        # color = extras[["color"]],
-        # linetype = extras[["linetype"]],
-        # linewidth = extras[["linewidth"]],
-        # fill = extras[["fill"]],
-        # alpha = extras[["alpha"]],
-        # conf.int = extras[["conf.int"]],
-        # conf.color = extras[["conf.color"]],
-        # conf.linetype = extras[["conf.linetype"]],
-        # conf.linewidth = extras[["conf.linewidth"]],
-        # conf.fill = extras[["conf.fill"]],
-        # conf.alpha = extras[["conf.alpha"]],
+        conf.int = conf.int,
         data = data,
         inherit.aes = inherit.aes,
         env = rlang::caller_env(),

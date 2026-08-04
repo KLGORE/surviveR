@@ -1,33 +1,49 @@
-#' Create a Kaplan-Meier Curve
+#' Create a Kaplan-Meier Curve Using the Tidyverse Grammar-of-Graphics
 #'
-#' Create a Kaplan-Meier Curve from provided data
-#'
-#' This function uses the survfit function in the survival package to generate a
-#' Kaplan-Meier (KM) curve for the given data. Kaplan-Meier curves are a non-parametric
-#' statistic used to estimate the survival function from data. To learn more about the
-#' specifics, see the foundational paper "Nonparametric Estimation from Incomplete Observations" by
-#' E. L. Kaplan and Paul Meier.
-#'
+#' @description Create Kaplan-Meier curve using aesthetic mapping arguments
+#' 
+#' @details
+#' The `geom_km` function generates KM curves that display nonparametric
+#' survival estimates S(t) versus time (t).  Users may plot cumulative failure curves 
+#' in lieu of the survival probability by using the `failure=TRUE` argument.  For more 
+#' statistical details on the Kaplan-Meier methodology, please see chapter 3 of
+#' \emph{Statistical Methods for Reliability Data (2nd edition)} by Meeker, Escobar,
+#' and Pascual.
+#' 
+#' \bold{Note on additional non-aesthetics arguments:} \cr
+#' Users may customize graphical attributes of the primary KM curve(s) 
+#' and confidence intervals.  Options include the following:
+#' 
+#'    * KM Curve(s): color, linewidth, linetype, alpha \cr
+#'      
+#'    * Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+#'        * \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+#'        * \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be 
+#'              color-coded by treatment. Other accepted values include the following:
+#'            * String of color name (ex: "black")
+#'            * TRUE indicates the color-coding fill color by treatment.
+#'            * Values of FALSE, NA, and "transparent" may be used to omit shading.
+#'        * \emph{conf.linewidth}: Line width of confidence interval lines.
+#'        * \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+#'        * \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
+#'        
+#' @seealso The [surviveR::geom_km2], which accepts a survival formula in lieu of variable 
+#' specification using aesthetics mappings. \cr
+#' 
+#' 
 #' @param mapping Aesthetics mapping with the following inputs:
 #'    * time: time column \cr
 #'    * time2: optional secondary time column (e.g. time2 or event/status column specified in Surv() arguments) \cr
 #'    * treatments: optional column or vector corresponding to the treatment variable.  Aliased arguments include treatment, trt, and trts. \cr
 #'    * strata: optional column or vector corresponding to the stratifying variable.   \cr
-#' @param failure TRUE or FALSE (default). Values of TRUE will result in a failure curve being plotted, FALSE will result in a survival curve.
-#' @param ... Other non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).
+#' @param ... Non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).
 #' @param conf.int Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.
-#' @param conf.fill Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-#' * String of color name (ex: "black")
-#' * TRUE indicates the color-coding fill color by treatment.
-#' * Values of FALSE, NA, and "transparent" may be used to omit shading.
-#' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
-#' @param conf.linewidth Line width of confidence interval lines.
-#' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha The opacity of the confidence interval fill. Values of 0 and 1 correspond to full and no transparency, respectively.
+#' @param failure TRUE or FALSE (default). Values of TRUE will result in a failure curve being plotted, FALSE will result in a survival curve.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #' @export
+#' @import tibble
 #' @import survival
 #' @import broom
 #' @import dplyr
@@ -40,9 +56,6 @@
 #' @import utils
 #' @importFrom dplyr filter
 #'
-#'
-#' @seealso The alternate version that accepts survfit formulas: [surviveR::geom_km2] \cr
-#'  The survival function that this function is built on: [survival::survfit]
 #'
 #' @examples
 #'library(ggplot2); library(dplyr)
@@ -120,50 +133,59 @@ geom_km = function(mapping = NULL, ..., conf.int = 0.95, failure = FALSE, data =
         fn = create_km_plot,
         mapping = mapping,
         extras = enquos(...),
-        # color = extras[["color"]],
-        # linetype = extras[["linetype"]],
-        # linewidth = extras[["linewidth"]],
-        # alpha = extras[["alpha"]],
-        # conf.int = extras[["conf.int"]],
-        # conf.color = extras[["conf.color"]],
-        # conf.linetype = extras[["conf.linetype"]],
-        # conf.linewidth = extras[["conf.linewidth"]],
-        # conf.fill = extras[["conf.fill"]],
-        # conf.alpha = extras[["conf.alpha"]],
-        data = data,
-        inherit.aes = inherit.aes,
         conf.int = conf.int,
         failure = failure,
+        data = data,
+        inherit.aes = inherit.aes,
         env = rlang::caller_env(),
         name = "geom_km"
     )
 }
 
-#' Create a Kaplan-Meier Curve
+#' Create a Kaplan-Meier Curve Using the Tidyverse Grammar-of-Graphics
 #'
-#' Create a Kaplan-Meier Curve from provided formula
-#'
-#' For description of the functionality, see the main version [surviveR::geom_km()]
-#'
+#' @description Create Kaplan-Meier curve by providing a survival formula
+#' 
+#' @details
+#' The `geom_km2` function generates KM curves that display nonparametric
+#' survival estimates S(t) versus time (t).  Unlike its companion function `geom_km`,
+#' `geom_km2` allows users to input a survival formula instead of specifying
+#' the aesthetics mapping.  Cumulative failure curves can be plotting
+#' in lieu of the survival probability by using the `failure=TRUE` argument.  For more 
+#' statistical details on the Kaplan-Meier methodology, please see chapter 3 of
+#' \emph{Statistical Methods for Reliability Data (2nd edition)} by Meeker, Escobar,
+#' and Pascual.
+#' 
+#' \bold{Note on additional non-aesthetics arguments:} \cr
+#' Users may customize graphical attributes of the primary KM curve(s) 
+#' and confidence intervals.  Options include the following:
+#' 
+#'    * KM Curve(s): color, linewidth, linetype, alpha \cr
+#'      
+#'    * Confidence Interval(s): conf.color, conf.fill, conf.linewidth, conf.linetype, conf.alpha  \cr
+#'        * \emph{conf.color}: Color of confidence interval lines. Value provided must be a string.
+#'        * \emph{conf.fill}: Default = NULL, which indicates that confidence intervals will be 
+#'              color-coded by treatment. Other accepted values include the following:
+#'            * String of color name (ex: "black")
+#'            * TRUE indicates the color-coding fill color by treatment.
+#'            * Values of FALSE, NA, and "transparent" may be used to omit shading.
+#'        * \emph{conf.linewidth}: Line width of confidence interval lines.
+#'        * \emph{conf.linetype}: Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
+#'        * \emph{conf.alpha}: Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
+#'        
+#' @seealso [surviveR::geom_km]. \cr
+#' 
 #' @param formula A formula compatible with survfit(), or a survfit object
 #' @param failure TRUE or FALSE (default). Values of TRUE will result in a failure curve being plotted, FALSE will result in a survival curve.
-#' @param ... Other non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).
+#' @param ... Non-aes graphical arguments pertaining to the primary failure/survival curve (color, linetype, linewidth, etc).
 #' @param conf.int Confidence level for displayed confidence intervals. Must be a value between 0 and 1. Values of FALSE, NULL, or NA will result in no confidence intervals being plotted.
-#' @param conf.fill Default = NULL, which indicates that confidence intervals will be color-coded by treatment. Other accepted values include the following:
-#' * String of color name (ex: "black")
-#' * TRUE indicates the color-coding fill color by treatment.
-#' * Values of FALSE, NA, and "transparent" may be used to omit shading.
-#' @param conf.linetype Line type of confidence interval lines ("dotted", "dashed", "solid", etc).
-#' @param conf.linewidth Line width of confidence interval lines.
-#' @param conf.color Color of confidence interval lines. Value provided must be a string.
-#' @param conf.alpha Opacity value between 0 and 1.  0 = transparent.  1 = fully opaque.
 #' @param data The reference dataset. May be inherited from the plot data or a previous surviveR layer data.
 #' @param inherit.aes TRUE or FALSE. TRUE inherits arguments from earlier ggplot calls.  Default = TRUE.
 #'
 #'
 #' @export
-#'
 #' @import survival
+#' @import tibble
 #' @import broom
 #' @import dplyr
 #' @import ggplot2
@@ -282,19 +304,10 @@ geom_km2 = function(formula = NULL, ..., conf.int = 0.95, failure = FALSE, data 
         fn = create_km_plot,
         formula = formula,
         extras = enquos(...),
-        color = extras[["color"]],
-        linetype = extras[["linetype"]],
-        linewidth = extras[["linewidth"]],
-        alpha = extras[["alpha"]],
-        conf.int = extras[["conf.int"]],
-        conf.color = extras[["conf.color"]],
-        conf.linetype = extras[["conf.linetype"]],
-        conf.linewidth = extras[["conf.linewidth"]],
-        conf.alpha = extras[["conf.alpha"]],
-        conf.fill = extras[["conf.fill"]],
-        inherit.aes = inherit.aes,
         conf.int = conf.int,
         failure = failure,
+        data = data,
+        inherit.aes = inherit.aes,
         env = rlang::caller_env(),
         name = "geom_km2"
     )
